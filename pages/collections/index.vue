@@ -28,6 +28,26 @@ const getGradient = (id: string) => {
 onMounted(async () => {
   await collectionsStore.fetchCollections()
 })
+
+useSchemaOrg([
+  defineWebPage({
+    name: 'Collections - GitHub Open Source Explorer',
+    description: 'Discover curated sets of repositories organized by purpose, technology, and domain.',
+    mainEntity: {
+      '@type': 'ItemList',
+      itemListElement: featuredCollections.value.map((collection, index) => ({
+        '@type': 'ListItem',
+        position: index + 1,
+        item: {
+          '@type': 'CollectionPage',
+          name: collection.title,
+          description: collection.description,
+          url: `/collections/${collection.id}`
+        }
+      }))
+    }
+  })
+])
 </script>
 
 <template>

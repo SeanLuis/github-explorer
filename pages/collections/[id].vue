@@ -57,6 +57,30 @@ const gradients = {
 const getGradient = (id: string) => {
   return gradients[id] || 'from-gray-500/90 to-slate-500/90'
 }
+
+// Add Schema.org data for collection
+watch(collection, (col) => {
+  if (col) {
+    useSchemaOrg([
+      defineCollectionPage({
+        name: col.title,
+        description: col.description,
+        mainEntity: {
+          '@type': 'ItemList',
+          itemListElement: col.repos.map((repo, index) => ({
+            '@type': 'ListItem',
+            position: index + 1,
+            item: {
+              '@type': 'SoftwareApplication',
+              name: repo.name,
+              url: `/repository/${repo.full_name}`
+            }
+          }))
+        }
+      })
+    ])
+  }
+})
 </script>
 
 <template>

@@ -31,6 +31,27 @@ const gradients = {
 const getGradient = (topicName: string) => {
   return gradients[topicName] || 'from-gray-500/90 to-slate-500/90'
 }
+
+// Add Schema.org data for topics index
+useSchemaOrg([
+  defineWebPage({
+    name: 'Topics - GitHub Open Source Explorer',
+    description: 'Browse popular topics in the GitHub community',
+    mainEntity: {
+      '@type': 'ItemList',
+      itemListElement: topics.value.map((topic, index) => ({
+        '@type': 'ListItem',
+        position: index + 1,
+        item: {
+          '@type': 'WebPage',
+          name: topic.name,
+          description: topic.description,
+          url: `/topics/${topic.name}`
+        }
+      }))
+    }
+  })
+])
 </script>
 
 <template>

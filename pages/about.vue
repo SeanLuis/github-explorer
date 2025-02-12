@@ -145,6 +145,29 @@
   </div>
 </template>
 
+<script setup lang="ts">
+// Add Schema.org data for about page
+useSchemaOrg([
+  defineWebPage({
+    '@type': 'AboutPage',
+    name: 'About - GitHub Open Source Explorer',
+    description: 'Learn more about GitHub Open Source Explorer and the technology behind it',
+    mainEntity: {
+      '@type': 'WebSite',
+      name: 'GitHub Open Source Explorer',
+      description: 'A modern interface for discovering and exploring open source projects',
+      applicationCategory: 'DeveloperApplication',
+      operatingSystem: 'Any',
+      offers: {
+        '@type': 'Offer',
+        price: '0',
+        priceCurrency: 'USD'
+      }
+    }
+  })
+])
+</script>
+
 <style scoped>
 .bg-grid-pattern {
   background-image: radial-gradient(circle at 1px 1px, rgb(0 0 0 / 0.1) 1px, transparent 0);

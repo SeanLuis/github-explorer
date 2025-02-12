@@ -11,6 +11,27 @@ import {
   SelectValue,
 } from '#components'
 
+useSchemaOrg([
+  defineWebPage({
+    '@type': 'SearchResultsPage',
+    name: 'GitHub Open Source Explorer',
+    description: 'Discover amazing open source projects on GitHub',
+    potentialAction: {
+      '@type': 'SearchAction',
+      target: {
+        '@type': 'EntryPoint',
+        urlTemplate: `https://your-production-domain.com'}/search?q={search_term_string}`,
+        actionPlatform: 'http://schema.org/WebSite'
+      },
+      'query-input': {
+        '@type': 'PropertyValueSpecification',
+        valueRequired: true,
+        valueName: 'search_term_string'
+      }
+    }
+  })
+])
+
 const store = useGithubStore()
 const searchQuery = ref('')
 const filters = ref({

@@ -2,6 +2,7 @@
 import { useGithubStore } from '~/stores/github'
 import { useDebounceFn } from '@vueuse/core'
 import { GitHubService } from '../../services/github'
+import { useSchemaOrg, defineWebPage } from '@vueuse/schema-org'
 
 const route = useRoute()
 const store = useGithubStore()
@@ -65,6 +66,31 @@ watch([searchQuery, selectedLanguage], debouncedSearch)
 const loadMore = () => {
   store.loadNextPage()
 }
+
+// Add Schema.org data for topic page
+watch(topic, (currentTopic) => {
+  if (currentTopic) {
+    useSchemaOrg([
+      defineWebPage({
+        name: `${currentTopic.name} Projects - GitHub Open Source Explorer`,
+        description: currentTopic.description,
+        mainEntity: {
+          '@type': 'ItemList',
+          itemListElement: store.repositories.map((repo, index) => ({
+            '@type': 'ListItem',
+            position: index + 1,
+            item: {
+              '@type': 'SoftwareSourceCode',
+              name: repo.name,
+              description: repo.description,
+              url: `/repository/${repo.full_name}`
+            }
+          }))
+        }
+      })
+    ])
+  }
+})
 </script>
 
 <template>

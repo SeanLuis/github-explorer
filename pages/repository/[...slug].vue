@@ -102,6 +102,28 @@ const getTextColor = computed(() => {
 const getBackgroundOverlay = computed(() => {
   return 'bg-black/20 dark:bg-black/40'
 })
+
+// Add Schema.org data for repository
+watch(repository, (repo) => {
+  if (repo) {
+    useSchemaOrg([
+      defineSoftwareSourceCode({
+        name: repo.name,
+        description: repo.description,
+        version: repo.default_branch,
+        dateCreated: repo.created_at,
+        dateModified: repo.updated_at,
+        programmingLanguage: repo.language,
+        codeRepository: repo.html_url,
+        author: {
+          '@type': 'Person',
+          name: repo.owner.login,
+          url: repo.owner.html_url
+        }
+      })
+    ])
+  }
+})
 </script>
 
 <template>
