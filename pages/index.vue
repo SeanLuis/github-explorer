@@ -21,7 +21,7 @@ const filters = ref({
   isTemplate: false,
   createdAfter: null
 })
-const selectedLanguage = ref('all') // Cambiado de '' a 'all'
+const selectedLanguage = ref<string>('all') // Cambiado de '' a 'all'
 const languages = ref(GitHubService.getLanguages())
 
 // Debounce mejorado para la búsqueda
@@ -61,7 +61,13 @@ const onLanguageChange = (value: string) => {
   })
 }
 
-watch(selectedLanguage, onLanguageChange)
+watch(selectedLanguage, (newValue) => {
+  store.searchRepositories({
+    query: searchQuery.value,
+    language: newValue === 'all' ? undefined : newValue,
+    minStars: 100
+  })
+})
 
 onMounted(() => {
   // Cargar repositorios iniciales
@@ -113,9 +119,9 @@ const clearFilter = (key: string) => {
 
         <!-- Language Filter and Advanced Filters -->
         <div class="flex gap-2">
-          <Select v-model="selectedLanguage" class="flex-1">
+          <Select v-model:model-value="selectedLanguage">
             <SelectTrigger class="w-full">
-              <SelectValue placeholder="Select Language" />
+              <SelectValue :placeholder="selectedLanguage || 'Select Language'" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">Any Language</SelectItem>
@@ -136,25 +142,27 @@ const clearFilter = (key: string) => {
         </div>
 
         <!-- Active Filters -->
-        <div v-if="Object.values(filters).some(v => v)" class="flex flex-wrap gap-2">
-          <Badge 
-            v-for="(value, key) in filters" 
-            v-if="value && key !== 'minStars'"
-            :key="key"
-            variant="secondary"
-            class="flex items-center gap-1"
-          >
-            {{ key }}: {{ Array.isArray(value) ? value.join(', ') : value }}
-            <Button
-              variant="ghost"
-              size="icon"
-              class="h-4 w-4 hover:bg-destructive/20"
-              @click="clearFilter(key)"
+         <template v-if="filters.length > 0 && Object.values(filters).some(v => v)">
+          <div class="flex flex-wrap gap-2">
+            <Badge 
+              v-for="(v, key) in filters" 
+              v-if="v && key !== 'minStars'"
+              :key="key"
+              variant="secondary"
+              class="flex items-center gap-1"
             >
-              <Icon name="octicon:x-16" class="h-3 w-3" />
-            </Button>
-          </Badge>
-        </div>
+              {{ key }}: {{ Array.isArray(v) ? v.join(', ') : v }}
+              <Button
+                variant="ghost"
+                size="icon"
+                class="h-4 w-4 hover:bg-destructive/20"
+                @click="clearFilter(key)"
+              >
+                <Icon name="octicon:x-16" class="h-3 w-3" />
+              </Button>
+            </Badge>
+          </div>
+        </template>
       </div>
     </section>
 

@@ -10,6 +10,13 @@ const TOPICS = [
 
 import type { IGitHubSearchResponse, IGitHubRepository } from '~/types'
 
+export interface ITopicInfo {
+  name: string;
+  description: string;
+  count: number;
+  featured: boolean;
+}
+
 export class GitHubService {
   private static buildSearchQuery(params: { 
     query?: string, 
@@ -65,7 +72,8 @@ export class GitHubService {
         { 
           headers: {
             'Accept': 'application/vnd.github.v3+json',
-            'X-GitHub-Api-Version': '2022-11-28'
+            'X-GitHub-Api-Version': '2022-11-28',
+            'Authorization': `Bearer ${useRuntimeConfig().public.githubToken}`
           }
         }
       )
@@ -98,5 +106,41 @@ export class GitHubService {
 
   static getTopics(): string[] {
     return TOPICS
+  }
+
+  static async getPopularTopics(): Promise<ITopicInfo[]> {
+    try {
+      // Obtener los tópicos más populares basados en repositorios con estrellas
+      const topics = [];
+      
+      for (const topic of TOPICS) {
+        const response = await this.searchRepositories({
+          query: `topic:${topic}`,
+          sort: 'stars',
+          per_page: 1
+        });
+
+        topics.push({
+          name: topic,
+          description: await this.getTopicDescription(topic),
+          count: response.total_count,
+          featured: response.total_count > 10000 // Marcar como destacado si tiene más de 10k repos
+        });
+      }
+
+      return topics.sort((a, b) => b.count - a.count);
+    } catch (error) {
+      console.error('Error fetching topics:', error);
+      throw new Error('Failed to fetch topics');
+    }
+  }
+
+  private static async getTopicDescription(topic: string): Promise<string> {
+    try {
+      const response = await $fetch(`https://api.github.com/search/repositories?q=topic:${topic}&sort=stars&per_page=1`);
+      return `Popular topic with repositories in ${topic}`;
+    } catch (error) {
+      return topic;
+    }
   }
 }

@@ -36,5 +36,10 @@ export default defineNuxtConfig({
     preference: 'system',
     fallback: 'light',
     dataValue: 'theme'
+  },
+  runtimeConfig: {
+    public: {
+      githubToken: process.env.GITHUB_TOKEN
+    }
   }
 })

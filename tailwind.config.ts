@@ -10,7 +10,11 @@ export default {
     './nuxt.config.{js,ts}',
     './app.vue',
   ],
-  safelist: ["dark"],
+  safelist: [
+    "dark",
+    "data-[state=open]:slide-in-from-top-[48%]",
+    "data-[state=closed]:slide-out-to-top-[48%]"
+  ],
   prefix: "",
   
   theme: {
@@ -80,12 +84,22 @@ export default {
           from: { height: 'var(--radix-collapsible-content-height)' },
           to: { height: 0 },
         },
+        "slide-in-from-top": {
+          "0%": { transform: "translateY(-48%)" },
+          "100%": { transform: "translateY(0)" }
+        },
+        "slide-out-to-top": {
+          "0%": { transform: "translateY(0)" },
+          "100%": { transform: "translateY(-48%)" }
+        }
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
         "collapsible-down": "collapsible-down 0.2s ease-in-out",
         "collapsible-up": "collapsible-up 0.2s ease-in-out",
+        "slide-in-from-top": "slide-in-from-top 0.2s ease-out",
+        "slide-out-to-top": "slide-out-to-top 0.2s ease-out"
       },
     },
   },
