@@ -28,14 +28,10 @@ jobs:
         run: pnpm install
 
       - name: Build application
-        run: pnpm run generate
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: pnpm build
 
       - name: Deploy to NuxtHub
         uses: nuxt-hub/action@v1
         id: deploy
         with:
           project-key: github-explorer-7i05
-          directory: .output/public
-          hub-url: https://admin.hub.nuxt.com
