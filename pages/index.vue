@@ -3,18 +3,26 @@ import { useGithubStore } from '~/stores/github'
 import { useDebounceFn } from '@vueuse/core'
 import { ref, watch, onMounted } from 'vue'
 import { GitHubService } from '~/services/github'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '#components'
 
 const store = useGithubStore()
 const searchQuery = ref('')
 const filters = ref({
-  language: '',
+  language: 'all', // Cambiado de '' a 'all'
   topics: [],
   minStars: 1000,
   hasTests: false,
   isTemplate: false,
   createdAfter: null
 })
-const selectedLanguage = ref('')
+const selectedLanguage = ref('all') // Cambiado de '' a 'all'
+const languages = ref(GitHubService.getLanguages())
 
 // Debounce mejorado para la búsqueda
 const debouncedSearch = useDebounceFn(() => {
@@ -45,6 +53,16 @@ const loadMore = () => {
   store.loadNextPage()
 }
 
+const onLanguageChange = (value: string) => {
+  store.searchRepositories({
+    query: searchQuery.value,
+    language: value === 'all' ? undefined : value,
+    minStars: 100
+  })
+}
+
+watch(selectedLanguage, onLanguageChange)
+
 onMounted(() => {
   // Cargar repositorios iniciales
   store.searchRepositories({ 
@@ -53,87 +71,89 @@ onMounted(() => {
     order: 'desc'
   })
 })
+
+const clearFilter = (key: string) => {
+  if (Array.isArray(filters.value[key])) {
+    filters.value[key] = []
+  } else if (key === 'minStars') {
+    filters.value[key] = 1000
+  } else {
+    filters.value[key] = null
+  }
+  onFiltersApply()
+}
 </script>
 
 <template>
   <div>
     <!-- Hero Section con búsqueda y filtros -->
-    <section class="text-center py-12 mb-8 bg-white dark:bg-github-dark-secondary rounded-lg border border-[#d0d7de] dark:border-github-border">
-      <h1 class="text-4xl font-bold mb-4 bg-gradient-to-r from-blue-600 to-purple-600 text-transparent bg-clip-text">
+    <section class="text-center py-12 mb-8 border rounded-lg bg-card text-card-foreground shadow-sm">
+      <h1 class="scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl mb-4">
         Discover Amazing Open Source Projects
       </h1>
       
+      <p class="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
+        Explore thousands of open source projects, find new tools, libraries and frameworks.
+      </p>
+      
       <div class="max-w-4xl mx-auto space-y-4">
+        <!-- Search Bar -->
+        <div class="relative">
+          <Icon 
+            name="octicon:search-16"
+            class="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground"
+          />
+          <Input
+            v-model="searchQuery"
+            type="search"
+            placeholder="Search repositories..."
+            class="w-full pl-12"
+          />
+        </div>
+
+        <!-- Language Filter and Advanced Filters -->
         <div class="flex gap-2">
-          <div class="relative flex-1">
-            <Icon 
-              name="octicon:search-16"
-              class="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"
-            />
-            <Input
-              v-model="searchQuery"
-              type="search"
-              placeholder="Search repositories..."
-              class="w-full pl-12"
-            />
-          </div>
+          <Select v-model="selectedLanguage" class="flex-1">
+            <SelectTrigger class="w-full">
+              <SelectValue placeholder="Select Language" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Any Language</SelectItem>
+              <SelectItem 
+                v-for="lang in languages" 
+                :key="lang" 
+                :value="lang"
+              >
+                {{ lang }}
+              </SelectItem>
+            </SelectContent>
+          </Select>
+
           <FiltersDialog
             v-model="filters"
             @apply="onFiltersApply"
           />
         </div>
-        
-        <!-- Language Filter -->
-        <select
-          v-model="selectedLanguage"
-          class="w-full p-2 border rounded-md"
-        >
-          <option value="">All Languages</option>
-          <option 
-            v-for="lang in GitHubService.getLanguages()"
-            :key="lang" 
-            :value="lang"
-          >
-            {{ lang }}
-          </option>
-        </select>
 
         <!-- Active Filters -->
         <div v-if="Object.values(filters).some(v => v)" class="flex flex-wrap gap-2">
           <Badge 
-            v-if="filters.language"
+            v-for="(value, key) in filters" 
+            v-if="value && key !== 'minStars'"
+            :key="key"
             variant="secondary"
             class="flex items-center gap-1"
           >
-            Language: {{ filters.language }}
+            {{ key }}: {{ Array.isArray(value) ? value.join(', ') : value }}
             <Button
               variant="ghost"
               size="icon"
-              class="h-4 w-4"
-              @click="filters.language = ''"
+              class="h-4 w-4 hover:bg-destructive/20"
+              @click="clearFilter(key)"
             >
-              <Icon name="octicon:x-16" />
+              <Icon name="octicon:x-16" class="h-3 w-3" />
             </Button>
           </Badge>
-          
-          <Badge 
-            v-for="topic in filters.topics"
-            :key="topic"
-            variant="secondary"
-            class="flex items-center gap-1"
-          >
-            {{ topic }}
-            <Button
-              variant="ghost"
-              size="icon"
-              class="h-4 w-4"
-              @click="filters.topics = filters.topics.filter(t => t !== topic)"
-            >
-              <Icon name="octicon:x-16" />
-            </Button>
-          </Badge>
-          
-          <!-- Add more active filters badges -->
         </div>
       </div>
     </section>

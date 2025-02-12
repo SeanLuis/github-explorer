@@ -29,6 +29,7 @@
   "devDependencies": {
     "@formkit/auto-animate": "^0.8.2",
     "@iconify-json/octicon": "^1.2.4",
+    "@iconify-json/ph": "^1.2.2",
     "@nuxt/icon": "^1.10.3",
     "@nuxtjs/color-mode": "^3.5.2",
     "@nuxtjs/robots": "^5.2.2",

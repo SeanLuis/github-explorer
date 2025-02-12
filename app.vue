@@ -1,17 +1,5 @@
-<script setup>
-const colorMode = useColorMode()
-</script>
-
 <template>
-  <div :class="[colorMode.value]">
-    <NuxtLayout>
-      <NuxtPage />
-    </NuxtLayout>
-  </div>
+  <NuxtLayout>
+    <NuxtPage />
+  </NuxtLayout>
 </template>
-
-<style>
-html.dark {
-  color-scheme: dark;
-}
-</style>

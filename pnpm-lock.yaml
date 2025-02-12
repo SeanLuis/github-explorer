@@ -57,6 +57,9 @@ importers:
       '@iconify-json/octicon':
         specifier: ^1.2.4
         version: 1.2.4
+      '@iconify-json/ph':
+        specifier: ^1.2.2
+        version: 1.2.2
       '@nuxt/icon':
         specifier: ^1.10.3
         version: 1.10.3(magicast@0.3.5)(vite@6.1.0(@types/node@22.13.1)(jiti@2.4.2)(terser@5.38.2)(yaml@2.7.0))(vue@3.5.13(typescript@5.7.3))
@@ -433,6 +436,9 @@ packages:
 
   '@iconify-json/octicon@1.2.4':
     resolution: {integrity: sha512-gTnY16fXA/nUcuvLWPN7tMARF4X656drlB1DQWnmEzaoA8dtJ/rSdg/PSFHuljlrEruPWHCcMQPyX8W3DyN+/A==}
+
+  '@iconify-json/ph@1.2.2':
+    resolution: {integrity: sha512-PgkEZNtqa8hBGjHXQa4pMwZa93hmfu8FUSjs/nv4oUU6yLsgv+gh9nu28Kqi8Fz9CCVu4hj1MZs9/60J57IzFw==}
 
   '@iconify/collections@1.0.516':
     resolution: {integrity: sha512-Zm2XhHE++VLFYli0sjgcBDaRE6e4iBqGMNlG2RS7GQ0RF9vl6kK+MenUwGTlfaaV3wajWZ2fMO6qlfB09vR4yg==}
@@ -4114,6 +4120,10 @@ snapshots:
   '@formkit/auto-animate@0.8.2': {}
 
   '@iconify-json/octicon@1.2.4':
+    dependencies:
+      '@iconify/types': 2.0.0
+
+  '@iconify-json/ph@1.2.2':
     dependencies:
       '@iconify/types': 2.0.0
 
