@@ -147,7 +147,6 @@ export default defineNuxtConfig({
       meta: [
         { name: 'viewport', content: 'width=device-width, initial-scale=1' },
         { name: 'format-detection', content: 'telephone=no' },
-        { name: 'theme-color', content: '#ffffff' },
         { name: 'twitter:card', content: 'summary_large_image' },
         { name: 'twitter:site', content: '@yourusername' },
         { name: 'twitter:creator', content: '@yourusername' },
@@ -155,11 +154,6 @@ export default defineNuxtConfig({
       ],
       link: [
         { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
-        { rel: 'canonical', href: process.env.NUXT_PUBLIC_SITE_URL },
-        { rel: 'manifest', href: '/manifest.json' },
-        { rel: 'icon', type: 'image/png', sizes: '192x192', href: '/images/icon-192x192.png' },
-        { rel: 'icon', type: 'image/png', sizes: '512x512', href: '/images/icon-512x512.png' },
-        { rel: 'apple-touch-icon', href: '/images/icon-192x192.png' },
         { rel: 'manifest', href: '/manifest.json' }
       ]
     }
