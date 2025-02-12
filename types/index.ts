@@ -97,6 +97,7 @@ export interface IAppState {
   searchParams: ISearchParams;
   totalResults: number;
   currentPage: number;
+  hasMorePages: boolean;
 }
 
 // Interfaz para las estadísticas del repositorio

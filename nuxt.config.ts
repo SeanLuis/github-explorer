@@ -22,7 +22,7 @@ export default defineNuxtConfig({
   },
   robots: {
     rules: {
-      UserAgent: '*',
+      UserAgent:  '*',
       Allow: '/',
       Sitemap: 'https://nuxt.com/sitemap.xml'
     }
@@ -30,5 +30,11 @@ export default defineNuxtConfig({
   shadcn: {
     prefix: '',
     componentDir: './components/ui'
+  },
+  colorMode: {
+    classSuffix: '',
+    preference: 'system',
+    fallback: 'light',
+    dataValue: 'theme'
   }
 })
