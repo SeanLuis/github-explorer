@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { GitHubService } from '../services/github';
+import { GitHubService } from '~/services/github';
 
 const topics = ref([])
 const loading = ref(true)
