@@ -69,7 +69,7 @@ const showMobileMenu = ref(false)
               variant="outline"
               size="sm"
               as="a"
-              href="https://github.com/SeanLuis/github-open-source"
+              href="https://github.com/SeanLuis/github-explorer"
               target="_blank"
               class="hidden sm:flex gap-2"
             >
@@ -118,7 +118,7 @@ const showMobileMenu = ref(false)
               variant="outline"
               size="sm"
               as="a"
-              href="https://github.com/SeanLuis/github-open-source"
+              href="https://github.com/SeanLuis/github-explorer"
               target="_blank"
               class="gap-2"
             >

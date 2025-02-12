@@ -122,7 +122,7 @@
           <Button
             variant="outline"
             as="a"
-            href="https://github.com/SeanLuis/github-open-source"
+            href="https://github.com/SeanLuis/github-explorer"
             target="_blank"
             class="gap-2"
           >

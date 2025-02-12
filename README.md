@@ -33,8 +33,8 @@ A modern web application to discover, explore, and track trending open-source pr
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/SeanLuis/github-open-source.git
-cd github-open-source
+git clone https://github.com/SeanLuis/github-explorer.git
+cd github-explorer
 ```
 
 2. Install dependencies:
