@@ -23,7 +23,6 @@ onMounted(async () => {
   }
 })
 
-// Añadir computed properties para mejor organización de datos
 const formattedDate = (date: string) => {
   return new Date(date).toLocaleDateString('en-US', {
     year: 'numeric',
@@ -36,14 +35,12 @@ const languageColors = {
   JavaScript: '#f1e05a',
   TypeScript: '#3178c6',
   Python: '#3572A5',
-  // Añadir más según necesites
 }
 
 const getLanguageColor = (language: string) => {
   return languageColors[language] || '#8e8ea0'
 }
 
-// Stats mejorados
 const repoStats = computed(() => [
   {
     label: 'Stars',
@@ -68,7 +65,7 @@ const repoStats = computed(() => [
   },
   {
     label: 'Pull Requests',
-    value: repository.value?.open_issues_count, // Esto debería venir de la API
+    value: repository.value?.open_issues_count,
     icon: 'octicon:git-pull-request-16',
     url: `${repository.value?.html_url}/pulls`,
     description: 'Proposed changes to this repository'
@@ -93,37 +90,31 @@ const metaInfo = computed(() => [
   }
 ])
 
-// Computed para el gradiente
 const headerGradient = computed(() => {
   if (!repository.value) return ''
-  // Usamos el nombre del repo + owner para generar un gradiente único pero consistente
   return getGradientFromString(`${repository.value.owner.login}/${repository.value.name}`)
 })
 
 const getTextColor = computed(() => {
-  return 'text-white dark:text-white' // Siempre blanco para mejor contraste con gradientes
+  return 'text-white dark:text-white'
 })
 
 const getBackgroundOverlay = computed(() => {
-  return 'bg-black/20 dark:bg-black/40' // Overlay semi-transparente para mejorar legibilidad
+  return 'bg-black/20 dark:bg-black/40'
 })
 </script>
 
 <template>
   <div v-if="repository" class="min-h-screen">
-    <!-- Header Hero con gradiente y patrón -->
     <div 
       class="relative -mx-6 -mt-6 px-6 py-16 mb-6 overflow-hidden"
       :class="['bg-gradient-to-br', headerGradient]"
     >
-      <!-- Overlay para mejor contraste -->
       <div :class="['absolute inset-0', getBackgroundOverlay]" />
       
-      <!-- Patrón de fondo con dots -->
       <div class="absolute inset-0 bg-grid-pattern opacity-10" />
       
       <div class="container relative">
-        <!-- Breadcrumb y Meta -->
         <div class="mb-8">
           <div class="flex items-center gap-2 text-sm mb-4">
             <NuxtLink 
@@ -142,7 +133,6 @@ const getBackgroundOverlay = computed(() => {
             <h1 class="font-semibold text-white">{{ repository.name }}</h1>
           </div>
 
-          <!-- Título y Descripción -->
           <div class="max-w-3xl mx-auto text-center">
             <h1 class="text-4xl font-bold tracking-tight mb-4 text-white">
               {{ repository.name }}
@@ -159,7 +149,6 @@ const getBackgroundOverlay = computed(() => {
             </p>
           </div>
 
-          <!-- Stats Cards con hover effects -->
           <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <Button
               v-for="stat in repoStats"
@@ -191,12 +180,9 @@ const getBackgroundOverlay = computed(() => {
       </div>
     </div>
 
-    <!-- Contenido Principal -->
     <div class="container">
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <!-- Main Content -->
         <div class="lg:col-span-2 space-y-6">
-          <!-- About Section -->
           <Card>
             <CardHeader>
               <CardTitle class="flex items-center gap-2">
@@ -232,7 +218,6 @@ const getBackgroundOverlay = computed(() => {
             </CardContent>
           </Card>
 
-          <!-- README Section (placeholder) -->
           <Card>
             <CardHeader>
               <CardTitle class="flex items-center gap-2">
@@ -241,15 +226,12 @@ const getBackgroundOverlay = computed(() => {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <!-- Aquí iría el contenido del README -->
               <p class="text-muted-foreground">README content coming soon...</p>
             </CardContent>
           </Card>
         </div>
 
-        <!-- Sidebar -->
         <div class="space-y-6">
-          <!-- Quick Links -->
           <Card>
             <CardHeader>
               <CardTitle>Quick Links</CardTitle>
@@ -304,7 +286,6 @@ const getBackgroundOverlay = computed(() => {
             </CardContent>
           </Card>
 
-          <!-- Languages (placeholder) -->
           <Card>
             <CardHeader>
               <CardTitle>Languages</CardTitle>
@@ -314,7 +295,6 @@ const getBackgroundOverlay = computed(() => {
             </CardContent>
           </Card>
 
-          <!-- Contributors (placeholder) -->
           <Card>
             <CardHeader>
               <CardTitle>Contributors</CardTitle>
@@ -328,7 +308,6 @@ const getBackgroundOverlay = computed(() => {
     </div>
   </div>
 
-  <!-- Loading State -->
   <div v-else class="flex justify-center items-center min-h-[50vh]">
     <div class="flex items-center gap-2">
       <div class="w-5 h-5 border-2 border-current border-t-transparent rounded-full animate-spin" />

@@ -11,7 +11,7 @@ const languages = ref(GitHubService.getLanguages())
 const topic = ref({
   name: '',
   description: '',
-  icon: 'carbon:hashtag', // Valor por defecto para el icono
+  icon: 'carbon:hashtag',
   gradient: 'from-gray-500/90 to-slate-500/90'
 })
 
@@ -39,10 +39,8 @@ onMounted(async () => {
   })
 })
 
-// Función para búsqueda con debounce
 const debouncedSearch = useDebounceFn(() => {
   if (!searchQuery.value && selectedLanguage.value === 'all') {
-    // Si no hay filtros, volvemos a la búsqueda original del topic
     store.searchRepositories({
       query: `topic:${topicName.value}`,
       sort: 'stars',
@@ -71,23 +69,18 @@ const loadMore = () => {
 
 <template>
   <div class="space-y-8">
-    <!-- Hero Section Mejorado -->
     <section class="relative overflow-hidden rounded-xl bg-card">
-      <!-- Fondo con gradiente -->
       <div 
         class="absolute inset-0 bg-gradient-to-r opacity-90 transition-opacity duration-300"
         :class="topic?.gradient"
       />
       
-      <!-- Patrón de fondo (opcional) -->
       <div class="absolute inset-0 opacity-10">
         <div class="absolute inset-0" style="background-image: url('data:image/svg+xml,...');" />
       </div>
 
-      <!-- Contenido -->
       <div class="relative px-6 py-24 sm:px-12 sm:py-32">
         <div class="mx-auto max-w-4xl text-center">
-          <!-- Icono Grande -->
           <div class="mb-8 flex justify-center">
             <div class="rounded-full bg-white/10 p-4 backdrop-blur-sm">
               <Icon 
@@ -97,7 +90,6 @@ const loadMore = () => {
             </div>
           </div>
 
-          <!-- Título y Descripción -->
           <h1 class="text-4xl font-extrabold tracking-tight text-white sm:text-5xl lg:text-6xl">
             #{{ topicName }}
           </h1>
@@ -105,9 +97,7 @@ const loadMore = () => {
             {{ topic?.description || `Explore repositories tagged with #${topicName}` }}
           </p>
 
-          <!-- Barra de búsqueda con efecto glassmorphism -->
           <div class="mt-10 flex flex-col sm:flex-row items-center gap-4 max-w-4xl mx-auto">
-            <!-- Search input - Ocupa más espacio -->
             <div class="relative flex-1">
               <div class="absolute inset-0 bg-white/10 backdrop-blur-md rounded-lg" />
               <Input
@@ -123,7 +113,6 @@ const loadMore = () => {
             </div>
 
             <div class="relative">
-            <!-- Language filter - Más compacto -->
             <Select v-model="selectedLanguage" class="w-[180px] shrink-0">
               <SelectTrigger class="bg-white/5 border-white/20 text-white backdrop-blur-md relative z-10">
                 <SelectValue placeholder="Language" />
@@ -145,7 +134,6 @@ const loadMore = () => {
       </div>
     </section>
 
-    <!-- Results Section -->
     <div>
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         <RepositoryCard
@@ -156,7 +144,6 @@ const loadMore = () => {
         />
       </div>
 
-      <!-- Loading State -->
       <div 
         v-if="store.loading" 
         class="flex justify-center py-8"
@@ -167,7 +154,6 @@ const loadMore = () => {
         </div>
       </div>
 
-      <!-- Load More Button -->
       <div 
         v-if="!store.loading && store.hasMorePages" 
         class="flex justify-center py-8"
@@ -185,14 +171,12 @@ const loadMore = () => {
   backdrop-filter: blur(12px);
 }
 
-/* Ajuste adicional para mejorar el espaciado en móvil */
 @media (max-width: 640px) {
   .flex-col > * {
     width: 100%;
   }
 }
 
-/* Asegurar que los inputs sean interactivos */
 .z-10 {
   isolation: isolate;
 }

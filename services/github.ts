@@ -27,31 +27,26 @@ export class GitHubService {
   }): string {
     const conditions: string[] = []
     
-    // Agregar filtro de estrellas primero
     if (params.minStars && params.minStars > 0) {
       conditions.push(`stars:>=${params.minStars}`)
     } else {
       conditions.push('stars:>100') // filtro por defecto
     }
     
-    // Agregar query de búsqueda si existe
     if (params.query?.trim()) {
       conditions.push(params.query.trim())
     }
     
-    // Agregar filtro de lenguaje
     if (params.language && params.language !== 'all') {
       conditions.push(`language:${params.language}`)
     }
     
-    // Agregar filtros de tópicos
     if (params.topics && params.topics.length > 0) {
       params.topics.forEach(topic => {
         conditions.push(`topic:${topic}`)
       })
     }
 
-    // Agregar filtros adicionales
     if (params.hasTests) {
       conditions.push('topic:testing')
     }
@@ -59,7 +54,7 @@ export class GitHubService {
       conditions.push('is:template')
     }
 
-    console.log('Search conditions:', conditions) // Para debug
+    console.log('Search conditions:', conditions)
     return conditions.join(' ')
   }
 

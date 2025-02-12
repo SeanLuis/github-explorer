@@ -24,7 +24,6 @@ const filters = ref({
 const selectedLanguage = ref<string>('all')
 const languages = ref(GitHubService.getLanguages())
 
-// Debounce mejorado para la búsqueda
 const debouncedSearch = useDebounceFn(() => {
   if (!searchQuery.value && !selectedLanguage.value) return
   
@@ -35,12 +34,10 @@ const debouncedSearch = useDebounceFn(() => {
   })
 }, 500)
 
-// Observar cambios en búsqueda y lenguaje
 watch([searchQuery, selectedLanguage], () => {
   debouncedSearch()
 })
 
-// Aplicar filtros
 const onFiltersApply = () => {
   const searchParams = {
     query: searchQuery.value,
@@ -51,11 +48,10 @@ const onFiltersApply = () => {
     isTemplate: filters.value.isTemplate
   }
   
-  console.log('Applying filters:', searchParams) // Para debug
+  console.log('Applying filters:', searchParams)
   store.searchRepositories(searchParams)
 }
 
-// Cargar más resultados
 const loadMore = () => {
   store.loadNextPage()
 }
@@ -74,7 +70,6 @@ watch(selectedLanguage, (newValue) => {
 })
 
 onMounted(() => {
-  // Cargar repositorios iniciales
   store.searchRepositories({ 
     minStars: 1000,
     sort: 'stars',
@@ -82,7 +77,6 @@ onMounted(() => {
   })
 })
 
-// Función helper para formatear el valor del filtro para mostrar
 const formatFilterValue = (key: string, value: any): string => {
   if (key === 'minStars') return `${value}+ stars`
   if (key === 'language') return value
@@ -92,7 +86,6 @@ const formatFilterValue = (key: string, value: any): string => {
   return String(value)
 }
 
-// Computed para los filtros activos
 const activeFilters = computed(() => {
   return Object.entries(filters.value).filter(([key, value]) => {
     if (key === 'language') return value !== 'all'
@@ -102,7 +95,6 @@ const activeFilters = computed(() => {
   })
 })
 
-// Modificar la función clearFilter
 const clearFilter = (key: string) => {
   if (key === 'language') {
     filters.value[key] = 'all'
@@ -121,9 +113,7 @@ const clearFilter = (key: string) => {
 
 <template>
   <div>
-    <!-- Hero Section -->
     <section class="text-center py-16 mb-8 border rounded-xl bg-gradient-to-br from-primary/5 to-background relative overflow-hidden">
-      <!-- Patrón de fondo -->
       <div class="absolute inset-0 bg-grid-pattern opacity-10" />
       
       <div class="relative">
@@ -135,7 +125,6 @@ const clearFilter = (key: string) => {
         </p>
         
         <div class="max-w-4xl mx-auto space-y-4">
-          <!-- Search y Filters Container -->
           <div class="flex flex-col sm:flex-row gap-4">
             <div class="relative flex-1">
               <Icon 
@@ -150,7 +139,6 @@ const clearFilter = (key: string) => {
               />
             </div>
 
-            <!-- Language Filter y Advanced Filters - Ahora se ajustan a su contenido -->
             <div class="flex gap-2 shrink-0">
               <Select v-model:model-value="selectedLanguage">
                 <SelectTrigger class="w-[180px]"> <!-- Ancho fijo para el trigger -->
@@ -175,7 +163,6 @@ const clearFilter = (key: string) => {
             </div>
           </div>
 
-          <!-- Active Filters -->
           <div 
             v-if="activeFilters.length > 0"
             class="flex flex-wrap gap-2 mt-4"
@@ -201,7 +188,6 @@ const clearFilter = (key: string) => {
       </div>
     </section>
 
-    <!-- Results Section -->
     <div>
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         <RepositoryCard
@@ -212,7 +198,6 @@ const clearFilter = (key: string) => {
         />
       </div>
 
-      <!-- Loading State -->
       <div 
         v-if="store.loading" 
         class="flex justify-center py-8"
@@ -223,7 +208,6 @@ const clearFilter = (key: string) => {
         </div>
       </div>
 
-      <!-- Load More Button -->
       <div 
         v-if="!store.loading && store.hasMorePages" 
         class="flex justify-center py-8"
@@ -233,7 +217,6 @@ const clearFilter = (key: string) => {
         </Button>
       </div>
 
-      <!-- End Message -->
       <div 
         v-if="!store.loading && !store.hasMorePages && store.repositories.length > 0" 
         class="text-center py-8 text-github-muted"

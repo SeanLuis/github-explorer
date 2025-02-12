@@ -16,7 +16,6 @@ const emit = defineEmits<{
     class="group relative cursor-pointer hover:shadow-md transition-all duration-200 hover:border-primary/50"
     @click="emit('preview', repository)"
   >
-    <!-- Acciones rápidas (visibles en hover) -->
     <div class="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity z-10 flex gap-2">
       <Button
         variant="ghost"

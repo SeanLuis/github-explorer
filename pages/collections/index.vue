@@ -12,7 +12,6 @@ const otherCollections = computed(() =>
   collectionsStore.collections.filter(c => !featuredCollections.value.includes(c))
 )
 
-// Gradientes para las colecciones destacadas
 const gradients = {
   'ai-frameworks': 'from-purple-500/90 to-pink-500/90',
   'web-frameworks': 'from-blue-500/90 to-cyan-500/90',
@@ -33,9 +32,7 @@ onMounted(async () => {
 
 <template>
   <div class="space-y-8">
-    <!-- Hero Section -->
     <section class="text-center py-16 mb-8 border rounded-xl bg-gradient-to-br from-primary/5 to-background relative overflow-hidden">
-      <!-- Patrón de fondo -->
       <div class="absolute inset-0 bg-grid-pattern opacity-10" />
       
       <div class="relative">
@@ -49,7 +46,6 @@ onMounted(async () => {
       </div>
     </section>
 
-    <!-- Loading State -->
     <div v-if="collectionsStore.loading" class="flex justify-center py-8">
       <div class="flex items-center gap-2 text-muted-foreground">
         <div class="w-5 h-5 border-2 border-current border-t-transparent rounded-full animate-spin" />
@@ -58,7 +54,6 @@ onMounted(async () => {
     </div>
 
     <template v-else>
-      <!-- Featured Collections -->
       <section class="space-y-4">
         <h2 class="text-2xl font-semibold tracking-tight">Featured Collections</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -68,7 +63,6 @@ onMounted(async () => {
             class="group hover: transition-all duration-300 overflow-hidden cursor-pointer"
             @click="navigateTo(`/collections/${collection.id}`)"
           >
-            <!-- Header con gradiente e icono -->
             <div class="relative">
               <div 
                 class="h-32 bg-gradient-to-r w-full transition-all duration-300 group-hover:scale-105"
@@ -82,7 +76,6 @@ onMounted(async () => {
               </div>
             </div>
 
-            <!-- Contenido -->
             <CardHeader>
               <CardTitle>{{ collection.title }}</CardTitle>
               <CardDescription class="line-clamp-2">
@@ -90,7 +83,6 @@ onMounted(async () => {
               </CardDescription>
             </CardHeader>
 
-            <!-- Preview de repos -->
             <CardContent>
               <div class="space-y-2">
                 <div
@@ -107,7 +99,6 @@ onMounted(async () => {
         </div>
       </section>
 
-      <!-- Other Collections -->
       <section class="space-y-4">
         <h2 class="text-2xl font-semibold tracking-tight">All Collections</h2>
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">

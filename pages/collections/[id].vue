@@ -26,10 +26,8 @@ watch([searchQuery, selectedLanguage], () => {
 })
 
 onMounted(async () => {
-  // Primero intentamos obtener la colección del store
   let currentCollection = collectionsStore.getCollectionById(route.params.id as string)
   
-  // Si no existe en el store, cargamos todas las colecciones
   if (!currentCollection) {
     await collectionsStore.fetchCollections()
     currentCollection = collectionsStore.getCollectionById(route.params.id as string)
@@ -47,7 +45,6 @@ const loadMore = () => {
   store.loadNextPage()
 }
 
-// Definir los mismos gradientes que en el index
 const gradients = {
   'ai-frameworks': 'from-purple-500/90 to-pink-500/90',
   'web-frameworks': 'from-blue-500/90 to-cyan-500/90',
@@ -64,23 +61,18 @@ const getGradient = (id: string) => {
 
 <template>
   <div v-if="collection" class="space-y-8">
-    <!-- Hero Section -->
     <section class="relative overflow-hidden rounded-xl bg-card">
-      <!-- Fondo con gradiente -->
       <div 
         class="absolute inset-0 bg-gradient-to-r w-full transition-all duration-300"
         :class="getGradient(collection.id)"
       />
       
-      <!-- Patrón de fondo -->
       <div class="absolute inset-0 opacity-10">
         <div class="absolute inset-0 bg-grid-pattern" />
       </div>
 
-      <!-- Contenido -->
       <div class="relative px-6 py-24 sm:px-12 sm:py-32">
         <div class="mx-auto max-w-4xl text-center">
-          <!-- Icono Grande -->
           <div class="mb-8 flex justify-center">
             <div class="rounded-full bg-white/10 p-4 backdrop-blur-sm">
               <Icon 
@@ -90,7 +82,6 @@ const getGradient = (id: string) => {
             </div>
           </div>
 
-          <!-- Título y Descripción -->
           <h1 class="text-4xl font-extrabold tracking-tight text-white sm:text-5xl lg:text-6xl">
             {{ collection.title }}
           </h1>
@@ -98,9 +89,7 @@ const getGradient = (id: string) => {
             {{ collection.description }}
           </p>
 
-          <!-- Barra de búsqueda con efecto glassmorphism -->
           <div class="mt-10 flex flex-col sm:flex-row items-center gap-4 max-w-4xl mx-auto">
-            <!-- Search input -->
             <div class="relative flex-1">
               <div class="absolute inset-0 bg-white/10 backdrop-blur-md rounded-lg" />
               <Input
@@ -115,7 +104,6 @@ const getGradient = (id: string) => {
               />
             </div>
 
-            <!-- Language filter -->
             <div class="relative">
               <Select v-model="selectedLanguage" class="w-[180px] shrink-0">
                 <SelectTrigger class="bg-white/5 border-white/20 text-white backdrop-blur-md relative z-10">
@@ -138,9 +126,8 @@ const getGradient = (id: string) => {
       </div>
     </section>
 
-    <!-- Results Section -->
     <div>
-      <!-- No Results Message -->
+      <!-- No Result Message -->
       <div 
         v-if="!store.loading && store.repositories.length === 0" 
         class="text-center py-8"
@@ -152,7 +139,6 @@ const getGradient = (id: string) => {
         </div>
       </div>
 
-      <!-- Results Grid -->
       <div 
         v-else 
         class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
@@ -165,7 +151,6 @@ const getGradient = (id: string) => {
         />
       </div>
 
-      <!-- Loading State -->
       <div 
         v-if="store.loading" 
         class="flex justify-center py-8"
@@ -176,7 +161,6 @@ const getGradient = (id: string) => {
         </div>
       </div>
 
-      <!-- Load More Button -->
       <div 
         v-if="!store.loading && store.hasMorePages && store.repositories.length > 0" 
         class="flex justify-center py-8"
@@ -186,7 +170,6 @@ const getGradient = (id: string) => {
         </Button>
       </div>
 
-      <!-- End of Results Message -->
       <div 
         v-if="!store.loading && !store.hasMorePages && store.repositories.length > 0" 
         class="text-center py-8 text-muted-foreground"
@@ -196,7 +179,6 @@ const getGradient = (id: string) => {
     </div>
   </div>
 
-  <!-- Loading Collection State -->
   <div 
     v-else 
     class="flex justify-center items-center min-h-[50vh]"
@@ -228,14 +210,12 @@ const getGradient = (id: string) => {
   background-size: 24px 24px;
 }
 
-/* Ajuste adicional para mejorar el espaciado en móvil */
 @media (max-width: 640px) {
   .flex-col > * {
     width: 100%;
   }
 }
 
-/* Asegurar que los inputs sean interactivos */
 .z-10 {
   isolation: isolate;
 }

@@ -1,4 +1,4 @@
-import type { IGitHubRepository } from '~/types'
+import { SortOptions, type IGitHubRepository } from '~/types'
 import { GitHubService } from './github';
 
 export interface ICollection {
@@ -140,7 +140,7 @@ export class CollectionService {
       collections.map(async (collection) => {
         const response = await GitHubService.searchRepositories({
           query: this.getQueryForCollection(collection.id),
-          sort: 'stars',
+          sort: SortOptions.STARS,
           per_page: 5
         });
         collection.repos = response.items;

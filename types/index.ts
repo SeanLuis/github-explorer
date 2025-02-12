@@ -1,6 +1,3 @@
-// types/github.ts
-
-// Interfaz principal para los repositorios
 export interface IGitHubRepository {
   id: number;
   node_id: string;
@@ -36,7 +33,6 @@ export interface IGitHubRepository {
   subscribers_count?: number;
 }
 
-// Interfaz para usuarios/organizaciones
 export interface IGitHubUser {
   login: string;
   id: number;
@@ -58,7 +54,6 @@ export interface IGitHubUser {
   site_admin: boolean;
 }
 
-// Interfaz para licencias
 export interface IGitHubLicense {
   key: string;
   name: string;
@@ -67,19 +62,16 @@ export interface IGitHubLicense {
   node_id: string;
 }
 
-// Interfaz para estadísticas de código
 export interface IGitHubLanguageStats {
   [key: string]: number;
 }
 
-// Interfaz para la respuesta de búsqueda
 export interface IGitHubSearchResponse {
   total_count: number;
   incomplete_results: boolean;
   items: IGitHubRepository[];
 }
 
-// Interfaz para los parámetros de búsqueda
 export interface ISearchParams {
   q: string;
   sort?: SortOptions;
@@ -88,7 +80,6 @@ export interface ISearchParams {
   page?: number;
 }
 
-// Interfaz para el estado de la aplicación
 export interface IAppState {
   repositories: IGitHubRepository[];
   currentRepository: IGitHubRepository | null;
@@ -100,14 +91,12 @@ export interface IAppState {
   hasMorePages: boolean;
 }
 
-// Interfaz para las estadísticas del repositorio
 export interface IRepositoryStats {
   commitActivity: ICommitActivity[];
   codeFrequency: ICodeFrequency[];
   participation: IParticipation;
 }
 
-// Interfaces para estadísticas detalladas
 export interface ICommitActivity {
   days: number[];
   total: number;
@@ -125,7 +114,6 @@ export interface IParticipation {
   owner: number[];
 }
 
-// Enums para filtros y ordenamiento
 export enum SortOptions {
   STARS = 'stars',
   FORKS = 'forks',
@@ -138,7 +126,6 @@ export enum OrderOptions {
   ASC = 'asc'
 }
 
-// Tipos para las respuestas de error
 export interface IGitHubError {
   message: string;
   documentation_url?: string;
@@ -149,7 +136,6 @@ export interface IGitHubError {
   }>;
 }
 
-// Interfaz para la configuración de la API
 export interface IGitHubApiConfig {
   baseURL: string;
   headers: {
@@ -159,17 +145,14 @@ export interface IGitHubApiConfig {
   };
 }
 
-// Interfaz para la caché
 export interface ICache<T> {
   data: T;
   timestamp: number;
   expiresIn: number;
 }
 
-// Tipo para las funciones de transformación de datos
 export type DataTransformer<T, R> = (data: T) => R;
 
-// Interfaz para los filtros avanzados
 export interface IAdvancedFilters {
   language?: string;
   minStars?: number;
@@ -189,5 +172,5 @@ export interface ITopicInfo {
   featured: boolean;
   icon?: string;
   gradient?: string;
-  count?: number; // Hacemos el count opcional ya que no lo usaremos
+  count?: number;
 }

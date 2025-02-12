@@ -1,8 +1,6 @@
 <template>
   <div class="space-y-8">
-    <!-- Hero Section -->
     <section class="text-center py-16 mb-8 border rounded-xl bg-gradient-to-br from-primary/5 to-background relative overflow-hidden">
-      <!-- Patrón de fondo -->
       <div class="absolute inset-0 bg-grid-pattern opacity-10" />
       
       <div class="relative">
@@ -16,7 +14,6 @@
     </section>
 
     <div class="max-w-3xl mx-auto space-y-6">
-      <!-- Main Content Card -->
       <Card>
         <CardHeader className="space-y-1 p-6">
           <CardTitle class="text-2xl">GitHub Open Source Explorer</CardTitle>
@@ -25,7 +22,6 @@
           </CardDescription>
         </CardHeader>
         <CardContent class="space-y-8">
-          <!-- Overview Section -->
           <div class="space-y-4">
             <h3 class="font-semibold text-lg">Overview</h3>
             <p class="text-muted-foreground">
@@ -35,7 +31,6 @@
             </p>
           </div>
 
-          <!-- Features Section -->
           <div class="space-y-4">
             <h3 class="font-semibold text-lg">Key Features</h3>
             <div class="grid sm:grid-cols-2 gap-4">
@@ -97,7 +92,6 @@
             </div>
           </div>
 
-          <!-- Tech Stack Section -->
           <div class="space-y-4">
             <h3 class="font-semibold text-lg">Technology Stack</h3>
             <div class="flex flex-wrap gap-2">

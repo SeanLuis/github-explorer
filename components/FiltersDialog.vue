@@ -49,7 +49,6 @@ onMounted(() => {
   filters.value = { ...props.modelValue }
 })
 
-// Actualizar el watch para sincronizar los cambios
 watch(() => props.modelValue, (newValue) => {
   filters.value = { ...newValue }
 }, { deep: true })

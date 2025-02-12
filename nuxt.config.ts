@@ -21,11 +21,9 @@ export default defineNuxtConfig({
     viewer: true,
   },
   robots: {
-    rules: {
-      UserAgent:  '*',
-      Allow: '/',
-      Sitemap: 'https://nuxt.com/sitemap.xml'
-    }
+    enabled: true,
+    sitemap: ['https://nuxt.com/sitemap.xml'],
+    allow: ['/'],
   },
   shadcn: {
     prefix: '',

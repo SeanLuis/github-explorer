@@ -4,7 +4,6 @@ import {
   type IAppState, 
   type IGitHubRepository, 
   type ISearchParams, 
-  type IAdvancedFilters,
   SortOptions,
   OrderOptions
 } from '~/types'

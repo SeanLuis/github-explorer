@@ -21,7 +21,6 @@ const route = useRoute()
               <span class="font-semibold hidden sm:inline-block">OpenSource Explorer</span>
             </NuxtLink>
             
-            <!-- Navegación desktop -->
             <nav class="hidden md:flex md:gap-4">
               <NuxtLink 
                 v-for="item in navigationItems" 
@@ -40,7 +39,6 @@ const route = useRoute()
             </nav>
           </div>
 
-          <!-- Acciones -->
           <div class="flex items-center gap-2">
             <ThemeToggle class="hidden sm:flex" />
             
@@ -56,7 +54,6 @@ const route = useRoute()
               Star
             </Button>
 
-            <!-- Botón menú móvil -->
             <Button
               variant="ghost"
               size="icon"
@@ -71,7 +68,6 @@ const route = useRoute()
           </div>
         </div>
 
-        <!-- Menú móvil -->
         <div
           v-show="showMobileMenu"
           class="md:hidden py-4 border-t"
