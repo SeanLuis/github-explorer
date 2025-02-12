@@ -1,0 +1,14 @@
+User-agent: *
+Allow: /
+
+# Block access to specific file types
+Disallow: /*.json$
+Disallow: /*.xml$
+Disallow: /*.txt$
+
+# Allow useful content directories
+Allow: /blog/
+Allow: /docs/
+Allow: /api/
+
+Sitemap: https://nuxt.com/sitemap.xml
