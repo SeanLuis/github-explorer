@@ -122,7 +122,7 @@
           <Button
             variant="outline"
             as="a"
-            href="https://github.com/yourusername/github-open-source"
+            href="https://github.com/SeanLuis/github-open-source"
             target="_blank"
             class="gap-2"
           >
@@ -132,7 +132,7 @@
           <Button
             variant="default"
             as="a"
-            href="https://github.com/yourusername"
+            href="https://github.com/SeanLuis"
             target="_blank"
             class="gap-2"
           >

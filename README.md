@@ -33,7 +33,7 @@ A modern web application to discover, explore, and track trending open-source pr
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/yourusername/github-open-source.git
+git clone https://github.com/SeanLuis/github-open-source.git
 cd github-open-source
 ```
 

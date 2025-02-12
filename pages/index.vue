@@ -29,7 +29,7 @@ useSchemaOrg([
       '@type': 'SearchAction',
       target: {
         '@type': 'EntryPoint',
-        urlTemplate: `https://your-production-domain.com'}/search?q={search_term_string}`,
+        urlTemplate: `https://github-explorer.nuxt.dev'}/search?q={search_term_string}`,
         actionPlatform: 'http://schema.org/WebSite'
       },
       'query-input': {

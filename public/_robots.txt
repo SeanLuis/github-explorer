@@ -11,4 +11,4 @@ Allow: /blog/
 Allow: /docs/
 Allow: /api/
 
-Sitemap: https://nuxt.com/sitemap.xml
+Sitemap: https://github-explorer.nuxt.dev/sitemap.xml

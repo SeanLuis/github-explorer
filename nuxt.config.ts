@@ -44,7 +44,7 @@ export default defineNuxtConfig({
     }
   },
   site: {
-    url: process.env.NUXT_PUBLIC_SITE_URL || 'https://your-production-domain.com',
+    url: process.env.NUXT_PUBLIC_SITE_URL || 'https://github-explorer.nuxt.dev',
     name: 'GitHub Open Source Explorer',
     description: 'Explore amazing open source projects on GitHub',
     defaultLocale: 'en'
@@ -67,9 +67,9 @@ export default defineNuxtConfig({
     identity: {
       type: 'Organization',
       name: 'GitHub Open Source Explorer',
-      logo: 'https://your-domain.com/logo.png'
+      logo: 'https://github-explorer.nuxt.dev/logo.png'
     },
-    host: process.env.NUXT_PUBLIC_SITE_URL || 'https://your-production-domain.com',
+    host: process.env.NUXT_PUBLIC_SITE_URL || 'https://github-explorer.nuxt.dev',
     includeHomeInBreadcrumb: false
   },
   routeRules: {
@@ -149,8 +149,8 @@ export default defineNuxtConfig({
         { name: 'viewport', content: 'width=device-width, initial-scale=1' },
         { name: 'format-detection', content: 'telephone=no' },
         { name: 'twitter:card', content: 'summary_large_image' },
-        { name: 'twitter:site', content: '@yourusername' },
-        { name: 'twitter:creator', content: '@yourusername' },
+        { name: 'twitter:site', content: '@SeanLuis' },
+        { name: 'twitter:creator', content: '@SeanLuis' },
         { name: 'theme-color', content: '#0D1117' }
       ],
       link: [

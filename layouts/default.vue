@@ -69,7 +69,7 @@ const showMobileMenu = ref(false)
               variant="outline"
               size="sm"
               as="a"
-              href="https://github.com/yourusername/github-open-source"
+              href="https://github.com/SeanLuis/github-open-source"
               target="_blank"
               class="hidden sm:flex gap-2"
             >
@@ -118,7 +118,7 @@ const showMobileMenu = ref(false)
               variant="outline"
               size="sm"
               as="a"
-              href="https://github.com/yourusername/github-open-source"
+              href="https://github.com/SeanLuis/github-open-source"
               target="_blank"
               class="gap-2"
             >
@@ -147,7 +147,7 @@ const showMobileMenu = ref(false)
             About
           </NuxtLink>
           <a 
-            href="https://github.com/yourusername"
+            href="https://github.com/SeanLuis"
             target="_blank"
             class="text-sm text-muted-foreground hover:text-foreground"
           >
