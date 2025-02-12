@@ -12,8 +12,8 @@ export default {
   ],
   safelist: [
     "dark",
-    "data-[state=open]:slide-in-from-top-[48%]",
-    "data-[state=closed]:slide-out-to-top-[48%]"
+    "data-[state=open]:slide-in-from-top",
+    "data-[state=closed]:slide-out-to-top"
   ],
   prefix: "",
   
@@ -85,12 +85,12 @@ export default {
           to: { height: 0 },
         },
         "slide-in-from-top": {
-          "0%": { transform: "translateY(-48%)" },
+          "0%": { transform: "translateY(-100%)" },
           "100%": { transform: "translateY(0)" }
         },
         "slide-out-to-top": {
           "0%": { transform: "translateY(0)" },
-          "100%": { transform: "translateY(-48%)" }
+          "100%": { transform: "translateY(-100%)" }
         }
       },
       animation: {
