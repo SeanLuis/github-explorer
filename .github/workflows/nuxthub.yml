@@ -17,6 +17,8 @@ jobs:
 
       - name: Install pnpm
         uses: pnpm/action-setup@v4
+        with:
+          version: 9.12.1
 
       - name: Install Node.js
         uses: actions/setup-node@v4
@@ -28,10 +30,14 @@ jobs:
         run: pnpm install
 
       - name: Build application
-        run: pnpm build
+        run: pnpm run generate
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Deploy to NuxtHub
         uses: nuxt-hub/action@v1
         id: deploy
         with:
           project-key: github-explorer-7i05
+          directory: .output/public
+          hub-url: https://admin.hub.nuxt.com
