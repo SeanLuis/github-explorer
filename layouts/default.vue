@@ -6,10 +6,11 @@ const navigationItems = [
 ]
 
 const showMobileMenu = ref(false)
+const route = useRoute()
 </script>
 
 <template>
-  <div class="min-h-screen bg-background text-foreground">
+  <div class="min-h-screen flex flex-col bg-background text-foreground">
     <header class="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div class="container px-4 sm:px-6">
         <div class="flex h-14 items-center justify-between">
@@ -26,7 +27,12 @@ const showMobileMenu = ref(false)
                 v-for="item in navigationItems" 
                 :key="item.path"
                 :to="item.path"
-                class="flex items-center px-3 py-2 text-sm font-medium text-muted-foreground rounded-md hover:bg-accent hover:text-accent-foreground"
+                :class="[
+                  'flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors',
+                  route.path === item.path
+                    ? 'bg-accent text-accent-foreground'
+                    : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
+                ]"
               >
                 <Icon :name="item.icon" class="mr-2 h-4 w-4" />
                 {{ item.label }}
@@ -75,7 +81,12 @@ const showMobileMenu = ref(false)
               v-for="item in navigationItems" 
               :key="item.path"
               :to="item.path"
-              class="flex items-center px-3 py-2 text-sm font-medium text-muted-foreground rounded-md hover:bg-accent hover:text-accent-foreground"
+              :class="[
+                'flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors',
+                route.path === item.path
+                  ? 'bg-accent text-accent-foreground'
+                  : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
+              ]"
               @click="showMobileMenu = false"
             >
               <Icon :name="item.icon" class="mr-2 h-4 w-4" />
@@ -100,11 +111,11 @@ const showMobileMenu = ref(false)
       </div>
     </header>
 
-    <main class="container py-6 px-4 sm:px-6">
+    <main class="container flex-1 py-6 px-4 sm:px-6">
       <slot />
     </main>
 
-    <footer class="border-t py-6">
+    <footer class="mt-auto border-t py-6">
       <div class="container px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
         <p class="text-center text-sm text-muted-foreground">
           Built with ❤️ using Nuxt and shadcn-ui

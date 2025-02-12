@@ -49,8 +49,14 @@ onMounted(() => {
   filters.value = { ...props.modelValue }
 })
 
+// Actualizar el watch para sincronizar los cambios
+watch(() => props.modelValue, (newValue) => {
+  filters.value = { ...newValue }
+}, { deep: true })
+
 const applyFilters = () => {
-  emit('update:modelValue', { ...filters.value })
+  const updatedFilters = { ...filters.value }
+  emit('update:modelValue', updatedFilters)
   emit('apply')
   dialog.value = false
 }

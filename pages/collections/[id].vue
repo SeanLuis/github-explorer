@@ -46,54 +46,94 @@ onMounted(async () => {
 const loadMore = () => {
   store.loadNextPage()
 }
+
+// Definir los mismos gradientes que en el index
+const gradients = {
+  'ai-frameworks': 'from-purple-500/90 to-pink-500/90',
+  'web-frameworks': 'from-blue-500/90 to-cyan-500/90',
+  'developer-tools': 'from-cyan-500/90 to-blue-500/90',
+  'data-science': 'from-yellow-500/90 to-orange-500/90',
+  'devops-tools': 'from-orange-500/90 to-red-500/90',
+  'mobile-frameworks': 'from-indigo-500/90 to-purple-500/90'
+}
+
+const getGradient = (id: string) => {
+  return gradients[id] || 'from-gray-500/90 to-slate-500/90'
+}
 </script>
 
 <template>
   <div v-if="collection" class="space-y-8">
     <!-- Hero Section -->
-    <section class="text-center py-12 mb-8 border rounded-lg bg-card text-card-foreground">
-      <h1 class="scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl mb-4">
-        {{ collection.title }}
-      </h1>
-      <p class="text-lg text-muted-foreground mb-8">
-        {{ collection.description }}
-      </p>
+    <section class="relative overflow-hidden rounded-xl bg-card">
+      <!-- Fondo con gradiente -->
+      <div 
+        class="absolute inset-0 bg-gradient-to-r w-full transition-all duration-300"
+        :class="getGradient(collection.id)"
+      />
+      
+      <!-- Patrón de fondo -->
+      <div class="absolute inset-0 opacity-10">
+        <div class="absolute inset-0 bg-grid-pattern" />
+      </div>
 
-      <div class="max-w-4xl mx-auto space-y-4">
-        <!-- Search y Filters Container -->
-        <div class="flex flex-col sm:flex-row gap-4">
-          <!-- Search Bar - Ocupa más espacio -->
-          <div class="relative flex-1">
-            <Icon 
-              name="octicon:search-16"
-              class="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground z-10"
-            />
-            <Input
-              v-model="searchQuery"
-              type="search"
-              placeholder="Search in this collection..."
-              class="w-full pl-12"
-            />
+      <!-- Contenido -->
+      <div class="relative px-6 py-24 sm:px-12 sm:py-32">
+        <div class="mx-auto max-w-4xl text-center">
+          <!-- Icono Grande -->
+          <div class="mb-8 flex justify-center">
+            <div class="rounded-full bg-white/10 p-4 backdrop-blur-sm">
+              <Icon 
+                :name="collection.icon || 'carbon:collection'"
+                class="h-16 w-16 text-white"
+              />
+            </div>
           </div>
 
-          <div class="relative">
-          <!-- Language Filter - Más compacto -->
-          <Select v-model="selectedLanguage" class="w-[180px] shrink-0">
-            <SelectTrigger>
-              <SelectValue :placeholder="selectedLanguage || 'Select Language'" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Any Language</SelectItem>
-              <SelectItem 
-                v-for="lang in languages" 
-                :key="lang" 
-                :value="lang"
-              >
-                {{ lang }}
-              </SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
+          <!-- Título y Descripción -->
+          <h1 class="text-4xl font-extrabold tracking-tight text-white sm:text-5xl lg:text-6xl">
+            {{ collection.title }}
+          </h1>
+          <p class="mt-6 text-xl text-white/90">
+            {{ collection.description }}
+          </p>
+
+          <!-- Barra de búsqueda con efecto glassmorphism -->
+          <div class="mt-10 flex flex-col sm:flex-row items-center gap-4 max-w-4xl mx-auto">
+            <!-- Search input -->
+            <div class="relative flex-1">
+              <div class="absolute inset-0 bg-white/10 backdrop-blur-md rounded-lg" />
+              <Input
+                v-model="searchQuery"
+                type="search"
+                placeholder="Search in this collection..."
+                class="w-full pl-12 bg-white/5 border-white/20 text-white placeholder:text-white/60 relative z-10"
+              />
+              <Icon 
+                name="octicon:search-16"
+                class="absolute left-4 top-1/2 transform -translate-y-1/2 text-white/60 z-20"
+              />
+            </div>
+
+            <!-- Language filter -->
+            <div class="relative">
+              <Select v-model="selectedLanguage" class="w-[180px] shrink-0">
+                <SelectTrigger class="bg-white/5 border-white/20 text-white backdrop-blur-md relative z-10">
+                  <SelectValue placeholder="Language" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Any Language</SelectItem>
+                  <SelectItem 
+                    v-for="lang in languages" 
+                    :key="lang" 
+                    :value="lang"
+                  >
+                    {{ lang }}
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
         </div>
       </div>
     </section>
@@ -177,5 +217,26 @@ const loadMore = () => {
   to {
     transform: rotate(360deg);
   }
+}
+
+.backdrop-blur-md {
+  backdrop-filter: blur(12px);
+}
+
+.bg-grid-pattern {
+  background-image: radial-gradient(circle at 1px 1px, rgb(0 0 0 / 0.1) 1px, transparent 0);
+  background-size: 24px 24px;
+}
+
+/* Ajuste adicional para mejorar el espaciado en móvil */
+@media (max-width: 640px) {
+  .flex-col > * {
+    width: 100%;
+  }
+}
+
+/* Asegurar que los inputs sean interactivos */
+.z-10 {
+  isolation: isolate;
 }
 </style>

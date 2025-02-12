@@ -82,8 +82,8 @@ export interface IGitHubSearchResponse {
 // Interfaz para los parámetros de búsqueda
 export interface ISearchParams {
   q: string;
-  sort?: 'stars' | 'forks' | 'help-wanted-issues' | 'updated';
-  order?: 'desc' | 'asc';
+  sort?: SortOptions;
+  order?: OrderOptions;
   per_page?: number;
   page?: number;
 }
@@ -187,5 +187,7 @@ export interface ITopicInfo {
   name: string;
   description: string;
   featured: boolean;
+  icon?: string;
+  gradient?: string;
   count?: number; // Hacemos el count opcional ya que no lo usaremos
 }

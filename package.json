@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@nuxt/devtools": "2.0.0",
+    "@nuxthub/core": "0.8.17",
     "@octokit/rest": "^21.1.0",
     "@radix-icons/vue": "^1.0.0",
     "@vueuse/core": "^12.5.0",
@@ -41,6 +42,7 @@
     "@tailwindcss/typography": "^0.5.16",
     "@vueuse/nuxt": "12.5.0",
     "pinia-plugin-persistedstate": "^4.2.0",
-    "shadcn-nuxt": "^0.11.3"
+    "shadcn-nuxt": "^0.11.3",
+    "wrangler": "^3.108.1"
   }
 }

@@ -1,11 +1,26 @@
 import { defineStore } from 'pinia'
 import { GitHubService } from '~/services/github'
-import type { 
-  IAppState, 
-  IGitHubRepository, 
-  ISearchParams, 
-  IAdvancedFilters 
+import { 
+  type IAppState, 
+  type IGitHubRepository, 
+  type ISearchParams, 
+  type IAdvancedFilters,
+  SortOptions,
+  OrderOptions
 } from '~/types'
+
+interface SearchRepositoriesParams {
+  query?: string
+  language?: string
+  topics?: string[]
+  minStars?: number
+  hasTests?: boolean
+  isTemplate?: boolean
+  page?: number
+  per_page?: number
+  sort?: SortOptions
+  order?: OrderOptions
+}
 
 export const useGithubStore = defineStore('github', {
   state: (): IAppState => ({
@@ -15,8 +30,8 @@ export const useGithubStore = defineStore('github', {
     error: null,
     searchParams: {
       q: 'stars:>1000',
-      sort: 'stars',
-      order: 'desc',
+      sort: SortOptions.STARS,
+      order: OrderOptions.DESC,
       per_page: 30,
       page: 1
     },
@@ -41,25 +56,24 @@ export const useGithubStore = defineStore('github', {
       }
     },
 
-    async searchRepositories(params?: { query?: string; language?: string }) {
+    async searchRepositories(params: SearchRepositoriesParams) {
       this.loading = true
       try {
-        // Reset pagination cuando cambian los filtros
-        if (params) {
-          this.currentPage = 1
-          this.repositories = []
-        }
-
         const response = await GitHubService.searchRepositories({
-          query: params?.query,
-          language: params?.language,
-          page: this.currentPage,
-          per_page: this.searchParams.per_page
+          ...params,
+          page: params.page || this.currentPage,
+          per_page: params.per_page || this.searchParams.per_page,
+          sort: params.sort || SortOptions.STARS,
+          order: params.order || OrderOptions.DESC
         })
         
-        this.repositories = this.currentPage === 1 
-          ? response.items 
-          : [...this.repositories, ...response.items]
+        // Si es una nueva búsqueda (página 1), reemplazar resultados
+        if (!params.page || params.page === 1) {
+          this.repositories = response.items
+        } else {
+          // Si es paginación, agregar a los resultados existentes
+          this.repositories = [...this.repositories, ...response.items]
+        }
         
         this.totalResults = response.total_count
         this.hasMorePages = this.repositories.length < response.total_count
@@ -76,8 +90,13 @@ export const useGithubStore = defineStore('github', {
       if (this.loading || !this.hasMorePages) return
       
       this.currentPage++
-      this.searchParams.page = this.currentPage
-      await this.searchRepositories()
+      await this.searchRepositories({
+        query: this.searchParams.q,
+        page: this.currentPage,
+        sort: this.searchParams.sort as SortOptions,
+        order: this.searchParams.order,
+        per_page: this.searchParams.per_page
+      })
     },
 
     setCurrentRepository(repo: IGitHubRepository) {

@@ -35,11 +35,20 @@ const getGradient = (topicName: string) => {
 
 <template>
   <div class="space-y-8">
-    <section class="space-y-4">
-      <h1 class="scroll-m-20 text-4xl font-extrabold tracking-tight">Topics</h1>
-      <p class="text-lg text-muted-foreground">
-        Browse popular topics in the GitHub community
-      </p>
+    <!-- Hero Section -->
+    <section class="text-center py-16 mb-8 border rounded-xl bg-gradient-to-br from-primary/5 to-background relative overflow-hidden">
+      <!-- Patrón de fondo -->
+      <div class="absolute inset-0 bg-grid-pattern opacity-10" />
+      
+      <div class="relative">
+        <h1 class="scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl mb-4">
+          Topics
+        </h1>
+        <p class="text-lg text-muted-foreground mx-auto max-w-2xl">
+          Browse popular topics in the GitHub community. Discover repositories organized
+          by the technologies, languages, and concepts that interest you.
+        </p>
+      </div>
     </section>
 
     <!-- Featured Topics -->
@@ -104,5 +113,10 @@ const getGradient = (topicName: string) => {
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
+}
+
+.bg-grid-pattern {
+  background-image: radial-gradient(circle at 1px 1px, rgb(0 0 0 / 0.1) 1px, transparent 0);
+  background-size: 24px 24px;
 }
 </style>

@@ -8,41 +8,58 @@ const TOPICS = [
   'database', 'machine-learning', 'devops', 'security'
 ]
 
-import type { IGitHubSearchResponse, IGitHubRepository } from '~/types'
-
-export interface ITopicInfo {
-  name: string;
-  description: string;
-  featured: boolean;
-  icon: string;
-  gradient: string;
-}
+import { 
+  OrderOptions,
+  type IGitHubSearchResponse, 
+  type IGitHubRepository, 
+  SortOptions,
+  type ITopicInfo
+} from '~/types'
 
 export class GitHubService {
   private static buildSearchQuery(params: { 
     query?: string, 
     language?: string, 
     topics?: string[],
-    minStars?: number
+    minStars?: number,
+    hasTests?: boolean,
+    isTemplate?: boolean
   }): string {
-    const conditions = ['stars:>100'] // Siempre comenzar con una condición válida
+    const conditions: string[] = []
     
+    // Agregar filtro de estrellas primero
+    if (params.minStars && params.minStars > 0) {
+      conditions.push(`stars:>=${params.minStars}`)
+    } else {
+      conditions.push('stars:>100') // filtro por defecto
+    }
+    
+    // Agregar query de búsqueda si existe
     if (params.query?.trim()) {
       conditions.push(params.query.trim())
     }
     
-    if (params.language) {
+    // Agregar filtro de lenguaje
+    if (params.language && params.language !== 'all') {
       conditions.push(`language:${params.language}`)
     }
     
-    params.topics?.forEach(topic => {
-      conditions.push(`topic:${topic}`)
-    })
-
-    if (params.minStars && params.minStars > 100) {
-      conditions[0] = `stars:>=${params.minStars}`
+    // Agregar filtros de tópicos
+    if (params.topics && params.topics.length > 0) {
+      params.topics.forEach(topic => {
+        conditions.push(`topic:${topic}`)
+      })
     }
 
+    // Agregar filtros adicionales
+    if (params.hasTests) {
+      conditions.push('topic:testing')
+    }
+    if (params.isTemplate) {
+      conditions.push('is:template')
+    }
+
+    console.log('Search conditions:', conditions) // Para debug
     return conditions.join(' ')
   }
 
@@ -51,19 +68,20 @@ export class GitHubService {
     language?: string
     topics?: string[]
     minStars?: number
-    sort?: 'stars' | 'forks' | 'updated'
-    order?: 'desc' | 'asc'
+    hasTests?: boolean
+    isTemplate?: boolean
+    sort?: SortOptions
+    order?: OrderOptions
     page?: number
     per_page?: number
   }): Promise<IGitHubSearchResponse> {
     try {
       const query = this.buildSearchQuery(params)
-      console.log('Search query:', query) // Para debug
-
+      
       const searchParams = new URLSearchParams({
         q: query,
-        sort: params.sort || 'stars',
-        order: params.order || 'desc',
+        sort: params.sort || SortOptions.STARS,
+        order: params.order || OrderOptions.DESC,
         per_page: String(params.per_page || 30),
         page: String(params.page || 1)
       })
@@ -93,8 +111,8 @@ export class GitHubService {
     const response = await this.searchRepositories({
       query: `created:>${oneWeekAgo.toISOString().split('T')[0]}`,
       minStars: 100,
-      sort: 'stars',
-      order: 'desc',
+      sort: SortOptions.STARS,
+      order: OrderOptions.DESC,
       per_page: 30
     })
 
