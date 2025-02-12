@@ -185,11 +185,6 @@ const loadMore = () => {
   backdrop-filter: blur(12px);
 }
 
-/* Añadir sombra suave al contenido principal */
-.bg-card {
-  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-}
-
 /* Ajuste adicional para mejorar el espaciado en móvil */
 @media (max-width: 640px) {
   .flex-col > * {

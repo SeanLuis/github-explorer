@@ -33,12 +33,20 @@ onMounted(async () => {
 
 <template>
   <div class="space-y-8">
-    <!-- Header Section -->
-    <section class="space-y-4">
-      <h1 class="scroll-m-20 text-4xl font-extrabold tracking-tight">Collections</h1>
-      <p class="text-lg text-muted-foreground">
-        Discover curated collections of repositories organized by category
-      </p>
+    <!-- Hero Section -->
+    <section class="text-center py-16 mb-8 border rounded-xl bg-gradient-to-br from-primary/5 to-background relative overflow-hidden">
+      <!-- Patrón de fondo -->
+      <div class="absolute inset-0 bg-grid-pattern opacity-10" />
+      
+      <div class="relative">
+        <h1 class="scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl mb-4">
+          Collections
+        </h1>
+        <p class="text-lg text-muted-foreground mx-auto max-w-2xl">
+          Discover curated sets of repositories organized by purpose, 
+          technology, and domain. Find the perfect tools for your next project.
+        </p>
+      </div>
     </section>
 
     <!-- Loading State -->
@@ -57,7 +65,7 @@ onMounted(async () => {
           <Card
             v-for="collection in featuredCollections"
             :key="collection.id"
-            class="group hover:shadow-lg transition-all duration-300 overflow-hidden cursor-pointer"
+            class="group hover: transition-all duration-300 overflow-hidden cursor-pointer"
             @click="navigateTo(`/collections/${collection.id}`)"
           >
             <!-- Header con gradiente e icono -->
@@ -145,5 +153,10 @@ onMounted(async () => {
   to {
     transform: rotate(360deg);
   }
+}
+
+.bg-grid-pattern {
+  background-image: radial-gradient(circle at 1px 1px, rgb(0 0 0 / 0.1) 1px, transparent 0);
+  background-size: 24px 24px;
 }
 </style>

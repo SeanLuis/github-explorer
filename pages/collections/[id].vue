@@ -51,7 +51,7 @@ const loadMore = () => {
 <template>
   <div v-if="collection" class="space-y-8">
     <!-- Hero Section -->
-    <section class="text-center py-12 mb-8 border rounded-lg bg-card text-card-foreground shadow-sm">
+    <section class="text-center py-12 mb-8 border rounded-lg bg-card text-card-foreground">
       <h1 class="scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl mb-4">
         {{ collection.title }}
       </h1>
@@ -121,7 +121,7 @@ const loadMore = () => {
           v-for="repo in store.repositories"
           :key="repo.id"
           :repository="repo"
-          @click="navigateTo(`/repository/${repo.full_name}`)"
+          @preview="navigateTo(`/repository/${repo.full_name}`)"
         />
       </div>
 

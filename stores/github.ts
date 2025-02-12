@@ -86,6 +86,29 @@ export const useGithubStore = defineStore('github', {
 
     updateSearchParams(params: Partial<ISearchParams>) {
       this.searchParams = { ...this.searchParams, ...params }
+    },
+
+    async getRepositoryDetails(fullName: string): Promise<IGitHubRepository> {
+      this.loading = true
+      try {
+        const response = await $fetch<IGitHubRepository>(
+          `https://api.github.com/repos/${fullName}`,
+          { 
+            headers: {
+              'Accept': 'application/vnd.github.v3+json',
+              'X-GitHub-Api-Version': '2022-11-28',
+              'Authorization': `Bearer ${useRuntimeConfig().public.githubToken}`
+            }
+          }
+        )
+        this.currentRepository = response
+        return response
+      } catch (error) {
+        console.error('GitHub API Error:', error)
+        throw new Error('Failed to fetch repository details')
+      } finally {
+        this.loading = false
+      }
     }
   },
 

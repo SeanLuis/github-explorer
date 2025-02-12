@@ -2,20 +2,43 @@
 import type { IGitHubRepository } from '~/types'
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '#components'
 
-const props = defineProps<{
+defineProps<{
   repository: IGitHubRepository
 }>()
 
 const emit = defineEmits<{
-  (e: 'click', repo: IGitHubRepository): void
+  (e: 'preview', repo: IGitHubRepository): void
 }>()
 </script>
 
 <template>
   <Card 
-    class="hover:border-github-link cursor-pointer transition-colors"
-    @click="emit('click', repository)"
+    class="group relative cursor-pointer hover:shadow-md transition-all duration-200 hover:border-primary/50"
+    @click="emit('preview', repository)"
   >
+    <!-- Acciones rápidas (visibles en hover) -->
+    <div class="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity z-10 flex gap-2">
+      <Button
+        variant="ghost"
+        size="icon"
+        class="h-8 w-8 hover:bg-accent"
+        @click.stop="emit('preview', repository)"
+      >
+        <Icon name="octicon:project-16" class="h-4 w-4" />
+      </Button>
+      <Button
+        variant="ghost"
+        size="icon"
+        as="a"
+        :href="repository.html_url"
+        target="_blank"
+        class="h-8 w-8 hover:bg-accent"
+        @click.stop
+      >
+        <Icon name="octicon:link-external-16" class="h-4 w-4" />
+      </Button>
+    </div>
+
     <CardHeader>
       <div class="flex items-center gap-3">
         <Avatar>
@@ -30,9 +53,9 @@ const emit = defineEmits<{
     </CardHeader>
     
     <CardContent>
-      <p class="text-sm text-github-text mb-4">{{ repository.description }}</p>
+      <p class="text-sm text-muted-foreground mb-4 line-clamp-2">{{ repository.description }}</p>
       
-      <div class="flex gap-4 text-sm text-github-muted">
+      <div class="flex flex-wrap gap-2">
         <Badge variant="secondary" class="flex items-center gap-1">
           <Icon name="octicon:star-16" class="w-4 h-4" />
           {{ repository.stargazers_count }}
@@ -51,7 +74,33 @@ const emit = defineEmits<{
           <Icon name="octicon:code-16" class="w-4 h-4" />
           {{ repository.language }}
         </Badge>
+
+        <Badge 
+          v-for="topic in repository.topics.slice(0, 2)" 
+          :key="topic"
+          variant="outline"
+          class="flex items-center gap-1"
+        >
+          <Icon name="octicon:hash-16" class="w-4 h-4" />
+          {{ topic }}
+        </Badge>
+        
+        <Badge 
+          v-if="repository.topics.length > 2"
+          variant="outline"
+        >
+          +{{ repository.topics.length - 2 }}
+        </Badge>
       </div>
     </CardContent>
   </Card>
 </template>
+
+<style scoped>
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+</style>

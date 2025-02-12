@@ -93,7 +93,7 @@ const clearFilter = (key: string) => {
 <template>
   <div>
     <!-- Hero Section con búsqueda y filtros -->
-    <section class="text-center py-12 mb-8 border rounded-lg bg-card text-card-foreground shadow-sm">
+    <section class="text-center py-12 mb-8 border rounded-lg bg-card text-card-foreground">
       <h1 class="scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl mb-4">
         Discover Amazing Open Source Projects
       </h1>

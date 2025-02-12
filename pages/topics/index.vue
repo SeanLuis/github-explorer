@@ -49,7 +49,7 @@ const getGradient = (topicName: string) => {
         <Card
           v-for="topic in featuredTopics"
           :key="topic.name"
-          class="group hover:shadow-lg transition-all duration-300 overflow-hidden cursor-pointer"
+          class="group hover: transition-all duration-300 overflow-hidden cursor-pointer"
           @click="navigateTo(`/topics/${topic.name}`)"
         >
           <div class="relative">
