@@ -24,6 +24,7 @@ if (route.path !== '/') {
 
 const navigationItems = [
   { label: 'Explore', icon: 'octicon:telescope-24', path: '/' },
+  { label: 'Trending', icon: 'octicon:flame-24', path: '/trending' },
   { label: 'Topics', icon: 'octicon:hash-24', path: '/topics' },
   { label: 'Collections', icon: 'octicon:package-24', path: '/collections' },
 ]

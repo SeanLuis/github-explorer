@@ -14,29 +14,36 @@ const topic = ref({
   icon: 'carbon:hashtag',
   gradient: 'from-gray-500/90 to-slate-500/90'
 })
+const loading = ref(true)
 
 const topicName = computed(() => route.params.name as string)
 
 onMounted(async () => {
-  const topics = await GitHubService.getPopularTopics()
-  const foundTopic = topics.find(t => t.name === topicName.value)
-  
-  if (foundTopic) {
-    topic.value = foundTopic
-  } else {
-    topic.value = {
-      name: topicName.value,
-      description: `Explore repositories tagged with #${topicName.value}`,
-      icon: 'carbon:hashtag',
-      gradient: 'from-gray-500/90 to-slate-500/90'
+  try {
+    const topics = await GitHubService.getPopularTopics()
+    const foundTopic = topics.find(t => t.name === topicName.value)
+    
+    if (foundTopic) {
+      topic.value = foundTopic
+    } else {
+      topic.value = {
+        name: topicName.value,
+        description: `Explore repositories tagged with #${topicName.value}`,
+        icon: 'carbon:hashtag',
+        gradient: 'from-gray-500/90 to-slate-500/90'
+      }
     }
+    
+    await store.searchRepositories({
+      query: `topic:${topicName.value}`,
+      sort: 'stars',
+      order: 'desc'
+    })
+  } catch (error) {
+    console.error('Error:', error)
+  } finally {
+    loading.value = false
   }
-  
-  store.searchRepositories({
-    query: `topic:${topicName.value}`,
-    sort: 'stars',
-    order: 'desc'
-  })
 })
 
 const debouncedSearch = useDebounceFn(() => {
@@ -102,7 +109,14 @@ watch(topic, (currentTopic) => {
 </script>
 
 <template>
-  <div class="space-y-8">
+  <div v-if="loading" class="py-12">
+    <div class="flex flex-col items-center justify-center gap-4">
+      <Icon name="octicon:sync-24" class="animate-spin h-8 w-8 text-muted-foreground" />
+      <p class="text-muted-foreground">Loading topic details...</p>
+    </div>
+  </div>
+
+  <div v-else class="space-y-8">
     <section class="relative overflow-hidden rounded-xl bg-card">
       <div 
         class="absolute inset-0 bg-gradient-to-r opacity-90 transition-opacity duration-300"
@@ -168,13 +182,16 @@ watch(topic, (currentTopic) => {
       </div>
     </section>
 
-    <div>
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+    <!-- Repository List -->
+    <section class="space-y-4">
+      <LoadingRepositories v-if="loading" />
+
+      <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         <RepositoryCard
           v-for="repo in store.repositories"
           :key="repo.id"
           :repository="repo"
-          @click="navigateTo(`/repository/${repo.full_name}`)"
+          @preview="navigateTo(`/repositories/${repo.full_name}`)"
         />
       </div>
 
@@ -196,7 +213,7 @@ watch(topic, (currentTopic) => {
           Load More Results
         </Button>
       </div>
-    </div>
+    </section>
   </div>
 </template>
 

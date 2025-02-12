@@ -81,59 +81,68 @@ useSeoMeta({
       </div>
     </section>
 
-    <!-- Featured Topics -->
-    <section class="space-y-4">
-      <h2 class="text-2xl font-semibold tracking-tight">Featured Topics</h2>
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        <Card
-          v-for="topic in featuredTopics"
-          :key="topic.name"
-          class="group hover: transition-all duration-300 overflow-hidden cursor-pointer"
-          @click="navigateTo(`/topics/${topic.name}`)"
-        >
-          <div class="relative">
-            <div 
-              class="h-32 bg-gradient-to-r w-full transition-all duration-300 group-hover:scale-105"
-              :class="topic.gradient"
-            />
-            <div class="absolute inset-0 flex items-center justify-center">
-              <Icon 
-                :name="topic.icon" 
-                class="h-16 w-16 text-white transform transition-all duration-300 group-hover:scale-110" 
-              />
-            </div>
-          </div>
-          <CardHeader>
-            <CardTitle class="flex items-center gap-2">
-              {{ topic.name }}
-            </CardTitle>
-            <CardDescription class="line-clamp-2">
-              {{ topic.description }}
-            </CardDescription>
-          </CardHeader>
-        </Card>
+    <div v-if="loading" class="py-12">
+      <div class="flex flex-col items-center justify-center gap-4">
+        <Icon name="octicon:sync-24" class="animate-spin h-8 w-8 text-muted-foreground" />
+        <p class="text-muted-foreground">Loading topics...</p>
       </div>
-    </section>
+    </div>
 
-    <!-- All Topics -->
-    <section class="space-y-4">
-      <h2 class="text-2xl font-semibold tracking-tight">Explore Topics</h2>
-      <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-        <Button
-          v-for="topic in otherTopics"
-          :key="topic.name"
-          variant="outline"
-          class="justify-start group hover:border-primary"
-          @click="navigateTo(`/topics/${topic.name}`)"
-        >
-          <Icon 
-            name="octicon:hash-24" 
-            class="mr-2 h-4 w-4 transition-colors group-hover:text-primary" 
-          />
-          {{ topic.name }}
-        </Button>
-      </div>
-    </section>
+    <template v-else>
+      <!-- Featured Topics -->
+      <section class="space-y-4">
+        <h2 class="text-2xl font-semibold tracking-tight">Featured Topics</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <Card
+            v-for="topic in featuredTopics"
+            :key="topic.name"
+            class="group hover: transition-all duration-300 overflow-hidden cursor-pointer"
+            @click="navigateTo(`/topics/${topic.name}`)"
+          >
+            <div class="relative">
+              <div 
+                class="h-32 bg-gradient-to-r w-full transition-all duration-300 group-hover:scale-105"
+                :class="topic.gradient"
+              />
+              <div class="absolute inset-0 flex items-center justify-center">
+                <Icon 
+                  :name="topic.icon" 
+                  class="h-16 w-16 text-white transform transition-all duration-300 group-hover:scale-110" 
+                />
+              </div>
+            </div>
+            <CardHeader>
+              <CardTitle class="flex items-center gap-2">
+                {{ topic.name }}
+              </CardTitle>
+              <CardDescription class="line-clamp-2">
+                {{ topic.description }}
+              </CardDescription>
+            </CardHeader>
+          </Card>
+        </div>
+      </section>
+
+      <!-- All Topics -->
+      <section class="space-y-4">
+        <h2 class="text-2xl font-semibold tracking-tight">Explore Topics</h2>
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          <Button
+            v-for="topic in otherTopics"
+            :key="topic.name"
+            variant="outline"
+            class="justify-start group hover:border-primary"
+            @click="navigateTo(`/topics/${topic.name}`)"
+          >
+            <Icon 
+              name="octicon:hash-24" 
+              class="mr-2 h-4 w-4 transition-colors group-hover:text-primary" 
+            />
+            {{ topic.name }}
+          </Button>
+        </div>
+      </section>
+    </template>
   </div>
 </template>
 

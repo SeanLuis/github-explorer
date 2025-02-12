@@ -12,6 +12,7 @@ const searchQuery = ref('')
 const selectedLanguage = ref('all')
 const languages = ref(GitHubService.getLanguages())
 const collection = ref<ICollection | null>(null)
+const loading = ref(true)
 
 const debouncedSearch = useDebounceFn(() => {
   const query = CollectionService.getQueryForCollection(route.params.id as CollectionId)
@@ -26,18 +27,24 @@ watch([searchQuery, selectedLanguage], () => {
 })
 
 onMounted(async () => {
-  let currentCollection = collectionsStore.getCollectionById(route.params.id as string)
-  
-  if (!currentCollection) {
-    await collectionsStore.fetchCollections()
-    currentCollection = collectionsStore.getCollectionById(route.params.id as string)
-  }
-  
-  collection.value = currentCollection || null
-  
-  if (collection.value) {
-    const query = CollectionService.getQueryForCollection(route.params.id as CollectionId)
-    store.searchRepositories({ query })
+  try {
+    let currentCollection = collectionsStore.getCollectionById(route.params.id as string)
+    
+    if (!currentCollection) {
+      await collectionsStore.fetchCollections()
+      currentCollection = collectionsStore.getCollectionById(route.params.id as string)
+    }
+    
+    collection.value = currentCollection || null
+    
+    if (collection.value) {
+      const query = CollectionService.getQueryForCollection(route.params.id as CollectionId)
+      await store.searchRepositories({ query })
+    }
+  } catch (error) {
+    console.error('Error:', error)
+  } finally {
+    loading.value = false
   }
 })
 
@@ -94,7 +101,14 @@ watch(collection, (col) => {
 </script>
 
 <template>
-  <div v-if="collection" class="space-y-8">
+  <div v-if="loading" class="py-12">
+    <div class="flex flex-col items-center justify-center gap-4">
+      <Icon name="octicon:sync-24" class="animate-spin h-8 w-8 text-muted-foreground" />
+      <p class="text-muted-foreground">Loading collection details...</p>
+    </div>
+  </div>
+
+  <div v-else-if="collection" class="space-y-8">
     <section class="relative overflow-hidden rounded-xl bg-card">
       <div 
         class="absolute inset-0 bg-gradient-to-r w-full transition-all duration-300"
@@ -185,15 +199,7 @@ watch(collection, (col) => {
         />
       </div>
 
-      <div 
-        v-if="store.loading" 
-        class="flex justify-center py-8"
-      >
-        <div class="flex items-center gap-2">
-          <div class="w-5 h-5 border-2 border-current border-t-transparent rounded-full animate-spin" />
-          <span>Loading repositories...</span>
-        </div>
-      </div>
+      <LoadingRepositories v-if="store.loading" />
 
       <div 
         v-if="!store.loading && store.hasMorePages && store.repositories.length > 0" 
@@ -213,15 +219,7 @@ watch(collection, (col) => {
     </div>
   </div>
 
-  <div 
-    v-else 
-    class="flex justify-center items-center min-h-[50vh]"
-  >
-    <div class="flex items-center gap-2">
-      <div class="w-5 h-5 border-2 border-current border-t-transparent rounded-full animate-spin" />
-      <span>Loading collection...</span>
-    </div>
-  </div>
+  <LoadingRepositories v-else />
 </template>
 
 <style scoped>

@@ -219,39 +219,33 @@ const clearFilter = (key: string) => {
     </section>
 
     <div>
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        <RepositoryCard
-          v-for="repo in store.repositories"
-          :key="repo.id"
-          :repository="repo"
-          @click="navigateTo(`/repository/${repo.full_name}`)"
-        />
-      </div>
+      <LoadingRepositories v-if="store.loading" />
 
-      <div 
-        v-if="store.loading" 
-        class="flex justify-center py-8"
-      >
-        <div class="flex items-center gap-2 text-github-muted">
-          <div class="w-5 h-5 border-2 border-current border-t-transparent rounded-full animate-spin" />
-          <span>Loading repositories...</span>
+      <div v-else>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <RepositoryCard
+            v-for="repo in store.repositories"
+            :key="repo.id"
+            :repository="repo"
+            @preview="navigateTo(`/repository/${repo.full_name}`)"
+          />
         </div>
-      </div>
 
-      <div 
-        v-if="!store.loading && store.hasMorePages" 
-        class="flex justify-center py-8"
-      >
-        <Button @click="loadMore">
-          Load More Results
-        </Button>
-      </div>
+        <div 
+          v-if="store.hasMorePages" 
+          class="flex justify-center py-8"
+        >
+          <Button @click="loadMore">
+            Load More Results
+          </Button>
+        </div>
 
-      <div 
-        v-if="!store.loading && !store.hasMorePages && store.repositories.length > 0" 
-        class="text-center py-8 text-github-muted"
-      >
-        That's all we have for now! ✨
+        <div 
+          v-if="!store.loading && !store.hasMorePages && store.repositories.length > 0" 
+          class="text-center py-8 text-github-muted"
+        >
+          That's all we have for now! ✨
+        </div>
       </div>
     </div>
   </div>

@@ -25,8 +25,16 @@ const getGradient = (id: string) => {
   return gradients[id] || 'from-gray-500/90 to-slate-500/90'
 }
 
+const loading = ref(true)
+
 onMounted(async () => {
-  await collectionsStore.fetchCollections()
+  try {
+    await collectionsStore.fetchCollections()
+  } catch (error) {
+    console.error('Error loading collections:', error)
+  } finally {
+    loading.value = false
+  }
 })
 
 // Agregar meta tags dinámicos
@@ -75,10 +83,10 @@ useSchemaOrg([
       </div>
     </section>
 
-    <div v-if="collectionsStore.loading" class="flex justify-center py-8">
-      <div class="flex items-center gap-2 text-muted-foreground">
-        <div class="w-5 h-5 border-2 border-current border-t-transparent rounded-full animate-spin" />
-        <span>Loading collections...</span>
+    <div v-if="loading" class="py-12">
+      <div class="flex flex-col items-center justify-center gap-4">
+        <Icon name="octicon:sync-24" class="animate-spin h-8 w-8 text-muted-foreground" />
+        <p class="text-muted-foreground">Loading collections...</p>
       </div>
     </div>
 
