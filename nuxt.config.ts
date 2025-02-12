@@ -12,7 +12,8 @@ export default defineNuxtConfig({
     '@nuxtjs/color-mode',
     '@nuxtjs/robots',
     'shadcn-nuxt',
-    '@nuxt/icon'
+    '@nuxt/icon',
+    '@nuxtjs/seo'
   ],
   tailwindcss: {
     cssPath: '~/assets/css/tailwind.css',
