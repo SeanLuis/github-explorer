@@ -2,6 +2,29 @@
 import { useCollectionsStore } from '~/stores/collections'
 
 const collectionsStore = useCollectionsStore()
+const featuredCollections = computed(() => 
+  collectionsStore.collections.filter(c => 
+    ['ai-frameworks', 'web-frameworks', 'developer-tools', 'data-science', 'devops-tools', 'mobile-frameworks']
+    .includes(c.id)
+  )
+)
+const otherCollections = computed(() => 
+  collectionsStore.collections.filter(c => !featuredCollections.value.includes(c))
+)
+
+// Gradientes para las colecciones destacadas
+const gradients = {
+  'ai-frameworks': 'from-purple-500/90 to-pink-500/90',
+  'web-frameworks': 'from-blue-500/90 to-cyan-500/90',
+  'developer-tools': 'from-cyan-500/90 to-blue-500/90',
+  'data-science': 'from-yellow-500/90 to-orange-500/90',
+  'devops-tools': 'from-orange-500/90 to-red-500/90',
+  'mobile-frameworks': 'from-indigo-500/90 to-purple-500/90'
+}
+
+const getGradient = (id: string) => {
+  return gradients[id] || 'from-gray-500/90 to-slate-500/90'
+}
 
 onMounted(async () => {
   await collectionsStore.fetchCollections()
@@ -10,57 +33,117 @@ onMounted(async () => {
 
 <template>
   <div class="space-y-8">
+    <!-- Header Section -->
     <section class="space-y-4">
       <h1 class="scroll-m-20 text-4xl font-extrabold tracking-tight">Collections</h1>
       <p class="text-lg text-muted-foreground">
-        Curated lists of repositories for different purposes
+        Discover curated collections of repositories organized by category
       </p>
     </section>
 
+    <!-- Loading State -->
     <div v-if="collectionsStore.loading" class="flex justify-center py-8">
-      <div class="flex items-center gap-2 text-github-muted">
+      <div class="flex items-center gap-2 text-muted-foreground">
         <div class="w-5 h-5 border-2 border-current border-t-transparent rounded-full animate-spin" />
         <span>Loading collections...</span>
       </div>
     </div>
-    
-    <div v-else class="grid grid-cols-1 md:grid-cols-2 gap-6">
-      <Card
-        v-for="collection in collectionsStore.collections"
-        :key="collection.id"
-        class="hover:bg-muted/50 cursor-pointer transition-colors"
-        @click="navigateTo(`/collections/${collection.id}`)"
-      >
-        <CardHeader>
-          <CardTitle class="flex items-center gap-2">
-            <Icon :name="collection.icon" class="h-5 w-5" />
-            {{ collection.title }}
-          </CardTitle>
-          <CardDescription>
-            {{ collection.description }}
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div class="space-y-2">
-            <div
-              v-for="repo in collection.repos"
-              :key="repo.full_name"
-              class="flex items-center gap-2 text-sm"
-            >
-              <Icon name="octicon:repo-16" class="h-4 w-4" />
-              {{ repo.full_name }}
-              <span class="text-xs text-muted-foreground">
-                ({{ repo.stargazers_count }} ★)
-              </span>
+
+    <template v-else>
+      <!-- Featured Collections -->
+      <section class="space-y-4">
+        <h2 class="text-2xl font-semibold tracking-tight">Featured Collections</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <Card
+            v-for="collection in featuredCollections"
+            :key="collection.id"
+            class="group hover:shadow-lg transition-all duration-300 overflow-hidden cursor-pointer"
+            @click="navigateTo(`/collections/${collection.id}`)"
+          >
+            <!-- Header con gradiente e icono -->
+            <div class="relative">
+              <div 
+                class="h-32 bg-gradient-to-r w-full transition-all duration-300 group-hover:scale-105"
+                :class="getGradient(collection.id)"
+              />
+              <div class="absolute inset-0 flex items-center justify-center">
+                <Icon 
+                  :name="collection.icon" 
+                  class="h-16 w-16 text-white transform transition-all duration-300 group-hover:scale-110" 
+                />
+              </div>
             </div>
-          </div>
-        </CardContent>
-        <CardFooter>
-          <p class="text-sm text-muted-foreground">
-            {{ collection.repos.length }} repositories
-          </p>
-        </CardFooter>
-      </Card>
-    </div>
+
+            <!-- Contenido -->
+            <CardHeader>
+              <CardTitle>{{ collection.title }}</CardTitle>
+              <CardDescription class="line-clamp-2">
+                {{ collection.description }}
+              </CardDescription>
+            </CardHeader>
+
+            <!-- Preview de repos -->
+            <CardContent>
+              <div class="space-y-2">
+                <div
+                  v-for="repo in collection.repos.slice(0, 3)"
+                  :key="repo.full_name"
+                  class="flex items-center gap-2 text-sm text-muted-foreground"
+                >
+                  <Icon name="octicon:repo-16" class="h-4 w-4 shrink-0" />
+                  <span class="truncate">{{ repo.full_name }}</span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </section>
+
+      <!-- Other Collections -->
+      <section class="space-y-4">
+        <h2 class="text-2xl font-semibold tracking-tight">All Collections</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <Button
+            v-for="collection in otherCollections"
+            :key="collection.id"
+            variant="outline"
+            class="justify-start h-auto p-4 group hover:border-primary"
+            @click="navigateTo(`/collections/${collection.id}`)"
+          >
+            <div class="flex flex-col items-start gap-2 w-full">
+              <div class="flex items-center gap-2 font-medium">
+                <Icon 
+                  :name="collection.icon" 
+                  class="h-5 w-5 transition-colors group-hover:text-primary" 
+                />
+                {{ collection.title }}
+              </div>
+              <p class="text-sm text-muted-foreground text-left line-clamp-2">
+                {{ collection.description }}
+              </p>
+            </div>
+          </Button>
+        </div>
+      </section>
+    </template>
   </div>
 </template>
+
+<style scoped>
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+</style>
