@@ -62,7 +62,8 @@ const getGradient = (id: string) => {
 watch(collection, (col) => {
   if (col) {
     useSchemaOrg([
-      defineCollectionPage({
+      defineWebPage({
+        '@type': 'CollectionPage',
         name: col.title,
         description: col.description,
         mainEntity: {
@@ -79,6 +80,15 @@ watch(collection, (col) => {
         }
       })
     ])
+
+    // Meta tags dinámicos
+    useSeoMeta({
+      title: `${col.title} - Collections | GitHub Open Source Explorer`,
+      description: col.description,
+      ogTitle: `${col.title} - Open Source Collection`,
+      ogDescription: col.description,
+      twitterCard: 'summary_large_image',
+    })
   }
 })
 </script>

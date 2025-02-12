@@ -2,7 +2,6 @@
 import { useGithubStore } from '~/stores/github'
 import { useDebounceFn } from '@vueuse/core'
 import { GitHubService } from '../../services/github'
-import { useSchemaOrg, defineWebPage } from '@vueuse/schema-org'
 
 const route = useRoute()
 const store = useGithubStore()
@@ -89,6 +88,15 @@ watch(topic, (currentTopic) => {
         }
       })
     ])
+
+    // Meta tags dinámicos
+    useSeoMeta({
+      title: `${currentTopic.name} Projects - GitHub Topics`,
+      description: currentTopic.description,
+      ogTitle: `${currentTopic.name} - GitHub Topic Explorer`,
+      ogDescription: currentTopic.description,
+      twitterCard: 'summary_large_image',
+    })
   }
 })
 </script>

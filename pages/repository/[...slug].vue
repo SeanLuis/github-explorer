@@ -3,6 +3,9 @@ import { useGithubStore } from '~/stores/github'
 import type { IGitHubRepository } from '~/types'
 import { getGradientFromString } from '~/utils/gradients'
 
+// Agregar esta importación
+import { defineWebPage } from '#imports'
+
 const route = useRoute()
 const router = useRouter()
 const store = useGithubStore()
@@ -103,11 +106,12 @@ const getBackgroundOverlay = computed(() => {
   return 'bg-black/20 dark:bg-black/40'
 })
 
-// Add Schema.org data for repository
+// Modificar el watch para usar defineWebPage en lugar de defineSoftwareSourceCode
 watch(repository, (repo) => {
   if (repo) {
     useSchemaOrg([
-      defineSoftwareSourceCode({
+      defineWebPage({
+        '@type': 'SoftwareSourceCode',
         name: repo.name,
         description: repo.description,
         version: repo.default_branch,
@@ -122,6 +126,16 @@ watch(repository, (repo) => {
         }
       })
     ])
+
+    // Meta tags dinámicos
+    useSeoMeta({
+      title: `${repo.name} - GitHub Open Source Explorer`,
+      description: repo.description,
+      ogTitle: `${repo.name} - Open Source Repository`,
+      ogDescription: repo.description,
+      ogImage: repo.owner.avatar_url,
+      twitterCard: 'summary_large_image',
+    })
   }
 })
 </script>

@@ -147,12 +147,24 @@ export default defineNuxtConfig({
       meta: [
         { name: 'viewport', content: 'width=device-width, initial-scale=1' },
         { name: 'format-detection', content: 'telephone=no' },
-        { name: 'theme-color', content: '#ffffff' }
+        { name: 'theme-color', content: '#ffffff' },
+        { name: 'twitter:card', content: 'summary_large_image' },
+        { name: 'twitter:site', content: '@yourusername' },
+        { name: 'twitter:creator', content: '@yourusername' }
       ],
       link: [
         { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
-        { rel: 'canonical', href: process.env.NUXT_PUBLIC_SITE_URL }
+        { rel: 'canonical', href: process.env.NUXT_PUBLIC_SITE_URL },
+        { rel: 'manifest', href: '/manifest.json' }
       ]
+    }
+  },
+
+  // Reglas de caché para recursos estáticos
+  nitro: {
+    routeRules: {
+      '/images/**': { headers: { 'cache-control': 'max-age=31536000' } },
+      '/fonts/**': { headers: { 'cache-control': 'max-age=31536000' } }
     }
   }
 })

@@ -1,4 +1,27 @@
 <script setup lang="ts">
+useSeoMeta({
+  themeColor: '#ffffff',
+  mobileWebAppCapable: 'yes',
+  formatDetection: {
+    telephone: false
+  }
+})
+
+// Agregar breadcrumbs si no estamos en la página principal
+const route = useRoute()
+if (route.path !== '/') {
+  useSchemaOrg([
+    defineBreadcrumb({
+      itemListElement: route.path.split('/').filter(Boolean).map((part, index, arr) => ({
+        '@type': 'ListItem',
+        position: index + 1,
+        name: part.charAt(0).toUpperCase() + part.slice(1),
+        item: arr.slice(0, index + 1).join('/')
+      }))
+    })
+  ])
+}
+
 const navigationItems = [
   { label: 'Explore', icon: 'octicon:telescope-24', path: '/' },
   { label: 'Topics', icon: 'octicon:hash-24', path: '/topics' },
@@ -6,7 +29,6 @@ const navigationItems = [
 ]
 
 const showMobileMenu = ref(false)
-const route = useRoute()
 </script>
 
 <template>

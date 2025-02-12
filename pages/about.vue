@@ -166,6 +166,15 @@ useSchemaOrg([
     }
   })
 ])
+
+// Agregar meta tags dinámicos
+useSeoMeta({
+  title: 'About - GitHub Open Source Explorer',
+  description: 'Learn more about GitHub Open Source Explorer and the technology behind it.',
+  ogTitle: 'About GitHub Open Source Explorer',
+  ogDescription: 'A modern interface for discovering and exploring open source projects',
+  twitterCard: 'summary_large_image',
+})
 </script>
 
 <style scoped>

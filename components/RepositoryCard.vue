@@ -41,7 +41,12 @@ const emit = defineEmits<{
     <CardHeader>
       <div class="flex items-center gap-3">
         <Avatar>
-          <AvatarImage :src="repository.owner.avatar_url" :alt="repository.owner.login" />
+          <AvatarImage 
+            :src="repository.owner.avatar_url" 
+            :alt="repository.owner.login"
+            loading="lazy"
+            onerror="this.src='/default-avatar.png'"
+          />
           <AvatarFallback>{{ repository.owner.login.charAt(0) }}</AvatarFallback>
         </Avatar>
         <div>

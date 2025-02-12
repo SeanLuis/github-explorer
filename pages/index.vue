@@ -11,6 +11,15 @@ import {
   SelectValue,
 } from '#components'
 
+// Agregar meta tags dinámicos
+useSeoMeta({
+  title: 'GitHub Open Source Explorer - Discover Amazing Projects',
+  description: 'Explore thousands of open source projects, find new tools, libraries and frameworks on GitHub.',
+  ogTitle: 'GitHub Open Source Explorer',
+  ogDescription: 'Discover amazing open source projects on GitHub',
+  twitterCard: 'summary_large_image',
+})
+
 useSchemaOrg([
   defineWebPage({
     '@type': 'SearchResultsPage',

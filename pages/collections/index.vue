@@ -29,6 +29,15 @@ onMounted(async () => {
   await collectionsStore.fetchCollections()
 })
 
+// Agregar meta tags dinámicos
+useSeoMeta({
+  title: 'Collections - GitHub Open Source Explorer',
+  description: 'Discover curated sets of repositories organized by purpose, technology, and domain.',
+  ogTitle: 'GitHub Collections',
+  ogDescription: 'Find the perfect tools for your next project with our curated collections',
+  twitterCard: 'summary_large_image',
+})
+
 useSchemaOrg([
   defineWebPage({
     name: 'Collections - GitHub Open Source Explorer',

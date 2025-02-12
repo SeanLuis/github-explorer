@@ -52,6 +52,15 @@ useSchemaOrg([
     }
   })
 ])
+
+// Agregar meta tags dinámicos
+useSeoMeta({
+  title: 'Topics - GitHub Open Source Explorer',
+  description: 'Browse popular topics in the GitHub community. Discover repositories organized by technologies, languages, and concepts.',
+  ogTitle: 'GitHub Topics Explorer',
+  ogDescription: 'Explore open source projects by topic',
+  twitterCard: 'summary_large_image',
+})
 </script>
 
 <template>
