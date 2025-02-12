@@ -44,7 +44,7 @@ pnpm install
 
 3. Create a `.env` file in the root directory with your GitHub token:
 ```env
-NUXT_PUBLIC_GITHUB_TOKEN=your_github_token_here
+NUXT_HUB_GITHUB_TOKEN=your_github_token_here
 ```
 
 4. Start the development server:

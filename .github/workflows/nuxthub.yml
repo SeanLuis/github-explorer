@@ -30,6 +30,9 @@ jobs:
       - name: Build application
         run: pnpm build
 
+      - name: Set environment variable
+        run: echo "NUXT_HUB_GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}" >> $GITHUB_ENV
+
       - name: Deploy to NuxtHub
         uses: nuxt-hub/action@v1
         id: deploy
