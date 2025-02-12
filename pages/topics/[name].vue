@@ -1,36 +1,68 @@
 <script setup lang="ts">
 import { useGithubStore } from '~/stores/github'
 import { useDebounceFn } from '@vueuse/core'
-import { GitHubService } from '../../services/github';
+import { GitHubService } from '../../services/github'
 
 const route = useRoute()
 const store = useGithubStore()
 const searchQuery = ref('')
 const selectedLanguage = ref('all')
 const languages = ref(GitHubService.getLanguages())
+const topic = ref({
+  name: '',
+  description: '',
+  icon: 'carbon:hashtag', // Valor por defecto para el icono
+  gradient: 'from-gray-500/90 to-slate-500/90'
+})
 
 const topicName = computed(() => route.params.name as string)
 
-const debouncedSearch = useDebounceFn(() => {
-  store.searchRepositories({
-    query: `${searchQuery.value} topic:${topicName.value}`,
-    language: selectedLanguage.value === 'all' ? undefined : selectedLanguage.value,
-    minStars: 100
-  })
-}, 500)
-
-watch([searchQuery, selectedLanguage], () => {
-  debouncedSearch()
-})
-
-onMounted(() => {
-  // Búsqueda inicial para el tópico
+onMounted(async () => {
+  const topics = await GitHubService.getPopularTopics()
+  const foundTopic = topics.find(t => t.name === topicName.value)
+  
+  if (foundTopic) {
+    topic.value = foundTopic
+  } else {
+    topic.value = {
+      name: topicName.value,
+      description: `Explore repositories tagged with #${topicName.value}`,
+      icon: 'carbon:hashtag',
+      gradient: 'from-gray-500/90 to-slate-500/90'
+    }
+  }
+  
   store.searchRepositories({
     query: `topic:${topicName.value}`,
     sort: 'stars',
     order: 'desc'
   })
 })
+
+// Función para búsqueda con debounce
+const debouncedSearch = useDebounceFn(() => {
+  if (!searchQuery.value && selectedLanguage.value === 'all') {
+    // Si no hay filtros, volvemos a la búsqueda original del topic
+    store.searchRepositories({
+      query: `topic:${topicName.value}`,
+      sort: 'stars',
+      order: 'desc'
+    })
+    return
+  }
+
+  let query = `topic:${topicName.value}`
+  if (searchQuery.value) {
+    query += ` ${searchQuery.value}`
+  }
+
+  store.searchRepositories({
+    query,
+    language: selectedLanguage.value === 'all' ? undefined : selectedLanguage.value
+  })
+}, 500)
+
+watch([searchQuery, selectedLanguage], debouncedSearch)
 
 const loadMore = () => {
   store.loadNextPage()
@@ -39,46 +71,77 @@ const loadMore = () => {
 
 <template>
   <div class="space-y-8">
-    <!-- Hero Section -->
-    <section class="text-center py-12 mb-8 border rounded-lg bg-card text-card-foreground shadow-sm">
-      <h1 class="scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl mb-4">
-        {{ topicName }}
-      </h1>
-      <p class="text-lg text-muted-foreground mb-8">
-        Explore repositories tagged with #{{ topicName }}
-      </p>
+    <!-- Hero Section Mejorado -->
+    <section class="relative overflow-hidden rounded-xl bg-card">
+      <!-- Fondo con gradiente -->
+      <div 
+        class="absolute inset-0 bg-gradient-to-r opacity-90 transition-opacity duration-300"
+        :class="topic?.gradient"
+      />
+      
+      <!-- Patrón de fondo (opcional) -->
+      <div class="absolute inset-0 opacity-10">
+        <div class="absolute inset-0" style="background-image: url('data:image/svg+xml,...');" />
+      </div>
 
-      <div class="max-w-4xl mx-auto space-y-4">
-        <!-- Search Bar -->
-        <div class="relative">
-          <Icon 
-            name="octicon:search-16"
-            class="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground"
-          />
-          <Input
-            v-model="searchQuery"
-            type="search"
-            placeholder="Search repositories in this topic..."
-            class="w-full pl-12"
-          />
+      <!-- Contenido -->
+      <div class="relative px-6 py-24 sm:px-12 sm:py-32">
+        <div class="mx-auto max-w-4xl text-center">
+          <!-- Icono Grande -->
+          <div class="mb-8 flex justify-center">
+            <div class="rounded-full bg-white/10 p-4 backdrop-blur-sm">
+              <Icon 
+                :name="topic.icon || 'carbon:hashtag'"
+                class="h-16 w-16 text-white"
+              />
+            </div>
+          </div>
+
+          <!-- Título y Descripción -->
+          <h1 class="text-4xl font-extrabold tracking-tight text-white sm:text-5xl lg:text-6xl">
+            #{{ topicName }}
+          </h1>
+          <p class="mt-6 text-xl text-white/90">
+            {{ topic?.description || `Explore repositories tagged with #${topicName}` }}
+          </p>
+
+          <!-- Barra de búsqueda con efecto glassmorphism -->
+          <div class="mt-10 flex flex-col sm:flex-row items-center gap-4 max-w-4xl mx-auto">
+            <!-- Search input - Ocupa más espacio -->
+            <div class="relative flex-1">
+              <div class="absolute inset-0 bg-white/10 backdrop-blur-md rounded-lg" />
+              <Input
+                v-model="searchQuery"
+                type="search"
+                placeholder="Search repositories in this topic..."
+                class="w-full pl-12 bg-white/5 border-white/20 text-white placeholder:text-white/60 relative z-10"
+              />
+              <Icon 
+                name="octicon:search-16"
+                class="absolute left-4 top-1/2 transform -translate-y-1/2 text-white/60 z-20"
+              />
+            </div>
+
+            <div class="relative">
+            <!-- Language filter - Más compacto -->
+            <Select v-model="selectedLanguage" class="w-[180px] shrink-0">
+              <SelectTrigger class="bg-white/5 border-white/20 text-white backdrop-blur-md relative z-10">
+                <SelectValue placeholder="Language" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Any Language</SelectItem>
+                <SelectItem 
+                  v-for="lang in languages" 
+                  :key="lang" 
+                  :value="lang"
+                >
+                  {{ lang }}
+                </SelectItem>
+              </SelectContent>
+            </Select>
+            </div>
+          </div>
         </div>
-
-        <!-- Language Filter -->
-        <Select v-model:model-value="selectedLanguage">
-          <SelectTrigger class="w-full">
-            <SelectValue :placeholder="selectedLanguage || 'Select Language'" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">Any Language</SelectItem>
-            <SelectItem 
-              v-for="lang in languages" 
-              :key="lang" 
-              :value="lang"
-            >
-              {{ lang }}
-            </SelectItem>
-          </SelectContent>
-        </Select>
       </div>
     </section>
 
@@ -116,3 +179,26 @@ const loadMore = () => {
     </div>
   </div>
 </template>
+
+<style scoped>
+.backdrop-blur-md {
+  backdrop-filter: blur(12px);
+}
+
+/* Añadir sombra suave al contenido principal */
+.bg-card {
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+}
+
+/* Ajuste adicional para mejorar el espaciado en móvil */
+@media (max-width: 640px) {
+  .flex-col > * {
+    width: 100%;
+  }
+}
+
+/* Asegurar que los inputs sean interactivos */
+.z-10 {
+  isolation: isolate;
+}
+</style>

@@ -3,9 +3,11 @@ import { useGithubStore } from '~/stores/github'
 import { useDebounceFn } from '@vueuse/core'
 import { CollectionService } from '~/services/collections'
 import { GitHubService } from '../../services/github';
+import { useCollectionsStore } from '~/stores/collections'
 
 const route = useRoute()
 const store = useGithubStore()
+const collectionsStore = useCollectionsStore()
 const searchQuery = ref('')
 const selectedLanguage = ref('all')
 const languages = ref(GitHubService.getLanguages())
@@ -24,9 +26,16 @@ watch([searchQuery, selectedLanguage], () => {
 })
 
 onMounted(async () => {
-  // Cargar datos de la colección
-  const collections = await CollectionService.generateCollections()
-  collection.value = collections.find(c => c.id === route.params.id)
+  // Primero intentamos obtener la colección del store
+  let currentCollection = collectionsStore.getCollectionById(route.params.id as string)
+  
+  // Si no existe en el store, cargamos todas las colecciones
+  if (!currentCollection) {
+    await collectionsStore.fetchCollections()
+    currentCollection = collectionsStore.getCollectionById(route.params.id as string)
+  }
+  
+  collection.value = currentCollection || null
   
   if (collection.value) {
     const query = CollectionService.getQueryForCollection(route.params.id as CollectionId)
@@ -51,42 +60,63 @@ const loadMore = () => {
       </p>
 
       <div class="max-w-4xl mx-auto space-y-4">
-        <!-- Search Bar -->
-        <div class="relative">
-          <Icon 
-            name="octicon:search-16"
-            class="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground"
-          />
-          <Input
-            v-model="searchQuery"
-            type="search"
-            placeholder="Search in this collection..."
-            class="w-full pl-12"
-          />
-        </div>
+        <!-- Search y Filters Container -->
+        <div class="flex flex-col sm:flex-row gap-4">
+          <!-- Search Bar - Ocupa más espacio -->
+          <div class="relative flex-1">
+            <Icon 
+              name="octicon:search-16"
+              class="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground z-10"
+            />
+            <Input
+              v-model="searchQuery"
+              type="search"
+              placeholder="Search in this collection..."
+              class="w-full pl-12"
+            />
+          </div>
 
-        <!-- Language Filter -->
-        <Select v-model:model-value="selectedLanguage">
-          <SelectTrigger class="w-full">
-            <SelectValue :placeholder="selectedLanguage || 'Select Language'" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">Any Language</SelectItem>
-            <SelectItem 
-              v-for="lang in languages" 
-              :key="lang" 
-              :value="lang"
-            >
-              {{ lang }}
-            </SelectItem>
-          </SelectContent>
-        </Select>
+          <div class="relative">
+          <!-- Language Filter - Más compacto -->
+          <Select v-model="selectedLanguage" class="w-[180px] shrink-0">
+            <SelectTrigger>
+              <SelectValue :placeholder="selectedLanguage || 'Select Language'" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Any Language</SelectItem>
+              <SelectItem 
+                v-for="lang in languages" 
+                :key="lang" 
+                :value="lang"
+              >
+                {{ lang }}
+              </SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        </div>
       </div>
     </section>
 
     <!-- Results Section -->
     <div>
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <!-- No Results Message -->
+      <div 
+        v-if="!store.loading && store.repositories.length === 0" 
+        class="text-center py-8"
+      >
+        <div class="flex flex-col items-center gap-2 text-muted-foreground">
+          <Icon name="octicon:search-24" class="h-12 w-12" />
+          <p class="text-lg">No repositories found matching your criteria</p>
+          <p class="text-sm">Try adjusting your search or filters</p>
+        </div>
+      </div>
+
+      <!-- Results Grid -->
+      <div 
+        v-else 
+        class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
+      >
         <RepositoryCard
           v-for="repo in store.repositories"
           :key="repo.id"
@@ -95,8 +125,57 @@ const loadMore = () => {
         />
       </div>
 
-      <!-- Estados de carga y botones similares a topics/[name].vue -->
-      <!-- ...existing code... -->
+      <!-- Loading State -->
+      <div 
+        v-if="store.loading" 
+        class="flex justify-center py-8"
+      >
+        <div class="flex items-center gap-2">
+          <div class="w-5 h-5 border-2 border-current border-t-transparent rounded-full animate-spin" />
+          <span>Loading repositories...</span>
+        </div>
+      </div>
+
+      <!-- Load More Button -->
+      <div 
+        v-if="!store.loading && store.hasMorePages && store.repositories.length > 0" 
+        class="flex justify-center py-8"
+      >
+        <Button @click="loadMore">
+          Load More Results
+        </Button>
+      </div>
+
+      <!-- End of Results Message -->
+      <div 
+        v-if="!store.loading && !store.hasMorePages && store.repositories.length > 0" 
+        class="text-center py-8 text-muted-foreground"
+      >
+        That's all we have for now! ✨
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading Collection State -->
+  <div 
+    v-else 
+    class="flex justify-center items-center min-h-[50vh]"
+  >
+    <div class="flex items-center gap-2">
+      <div class="w-5 h-5 border-2 border-current border-t-transparent rounded-full animate-spin" />
+      <span>Loading collection...</span>
     </div>
   </div>
 </template>
+
+<style scoped>
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+</style>

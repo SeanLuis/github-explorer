@@ -13,8 +13,9 @@ import type { IGitHubSearchResponse, IGitHubRepository } from '~/types'
 export interface ITopicInfo {
   name: string;
   description: string;
-  count: number;
   featured: boolean;
+  icon: string;
+  gradient: string;
 }
 
 export class GitHubService {
@@ -109,38 +110,113 @@ export class GitHubService {
   }
 
   static async getPopularTopics(): Promise<ITopicInfo[]> {
-    try {
-      // Obtener los tópicos más populares basados en repositorios con estrellas
-      const topics = [];
-      
-      for (const topic of TOPICS) {
-        const response = await this.searchRepositories({
-          query: `topic:${topic}`,
-          sort: 'stars',
-          per_page: 1
-        });
-
-        topics.push({
-          name: topic,
-          description: await this.getTopicDescription(topic),
-          count: response.total_count,
-          featured: response.total_count > 10000 // Marcar como destacado si tiene más de 10k repos
-        });
+    return [
+      {
+        name: 'ai',
+        description: 'Explore cutting-edge artificial intelligence projects, from machine learning frameworks to neural networks',
+        featured: true,
+        icon: 'carbon:machine-learning',
+        gradient: 'from-purple-500/90 to-pink-500/90'
+      },
+      {
+        name: 'web-development',
+        description: 'Modern web development frameworks, tools, and libraries for building amazing web applications',
+        featured: true,
+        icon: 'carbon:development',
+        gradient: 'from-blue-500/90 to-cyan-500/90'
+      },
+      {
+        name: 'cloud-native',
+        description: 'Tools and platforms for building scalable, resilient cloud-native applications',
+        featured: true,
+        icon: 'carbon:cloud-services',
+        gradient: 'from-cyan-500/90 to-blue-500/90'
+      },
+      {
+        name: 'devops',
+        description: 'Automation, CI/CD, infrastructure as code, and DevOps best practices',
+        featured: true,
+        icon: 'carbon:deployment-pattern',
+        gradient: 'from-orange-500/90 to-red-500/90'
+      },
+      {
+        name: 'blockchain',
+        description: 'Decentralized applications, smart contracts, and blockchain development tools',
+        featured: true,
+        icon: 'carbon:blockchain',
+        gradient: 'from-green-500/90 to-emerald-500/90'
+      },
+      {
+        name: 'mobile',
+        description: 'Cross-platform frameworks and native app development tools',
+        featured: true,
+        icon: 'carbon:devices',
+        gradient: 'from-indigo-500/90 to-purple-500/90'
+      },
+      {
+        name: 'security',
+        description: 'Security tools, penetration testing, and cybersecurity resources',
+        featured: true,
+        icon: 'carbon:security',
+        gradient: 'from-red-500/90 to-orange-500/90'
+      },
+      {
+        name: 'data-science',
+        description: 'Data analysis, visualization, and machine learning tools',
+        featured: true,
+        icon: 'carbon:data-vis-1',
+        gradient: 'from-yellow-500/90 to-orange-500/90'
+      },
+      // ... rest of topics with default gradient and icon
+      {
+        name: 'ui-design',
+        description: 'Beautiful UI components, design systems, and frontend frameworks',
+        featured: false,
+        icon: 'carbon:hashtag',
+        gradient: 'from-gray-500/90 to-slate-500/90'
+      },
+      {
+        name: 'api',
+        description: 'API development tools, documentation, and backend services',
+        featured: false,
+        icon: 'carbon:hashtag',
+        gradient: 'from-gray-500/90 to-slate-500/90'
+      },
+      {
+        name: 'testing',
+        description: 'Testing frameworks and tools for quality assurance',
+        featured: false,
+        icon: 'carbon:hashtag',
+        gradient: 'from-gray-500/90 to-slate-500/90'
+      },
+      {
+        name: 'productivity',
+        description: 'Developer tools and utilities to boost your productivity',
+        featured: false,
+        icon: 'carbon:hashtag',
+        gradient: 'from-gray-500/90 to-slate-500/90'
+      },
+      {
+        name: 'game-dev',
+        description: 'Game engines, frameworks, and tools for game development',
+        featured: false,
+        icon: 'carbon:hashtag',
+        gradient: 'from-gray-500/90 to-slate-500/90'
+      },
+      {
+        name: 'iot',
+        description: 'Internet of Things platforms and embedded systems development',
+        featured: false,
+        icon: 'carbon:hashtag',
+        gradient: 'from-gray-500/90 to-slate-500/90'
+      },
+      {
+        name: 'cli',
+        description: 'Command-line tools and terminal utilities',
+        featured: false,
+        icon: 'carbon:hashtag',
+        gradient: 'from-gray-500/90 to-slate-500/90'
       }
-
-      return topics.sort((a, b) => b.count - a.count);
-    } catch (error) {
-      console.error('Error fetching topics:', error);
-      throw new Error('Failed to fetch topics');
-    }
-  }
-
-  private static async getTopicDescription(topic: string): Promise<string> {
-    try {
-      const response = await $fetch(`https://api.github.com/search/repositories?q=topic:${topic}&sort=stars&per_page=1`);
-      return `Popular topic with repositories in ${topic}`;
-    } catch (error) {
-      return topic;
-    }
+    ];
   }
 }

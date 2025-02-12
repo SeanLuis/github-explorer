@@ -103,42 +103,45 @@ const clearFilter = (key: string) => {
       </p>
       
       <div class="max-w-4xl mx-auto space-y-4">
-        <!-- Search Bar -->
-        <div class="relative">
-          <Icon 
-            name="octicon:search-16"
-            class="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground"
-          />
-          <Input
-            v-model="searchQuery"
-            type="search"
-            placeholder="Search repositories..."
-            class="w-full pl-12"
-          />
-        </div>
+        <!-- Search y Filters Container -->
+        <div class="flex flex-col sm:flex-row gap-4">
+          <!-- Search Bar - Ahora ocupa el espacio restante -->
+          <div class="relative flex-1">
+            <Icon 
+              name="octicon:search-16"
+              class="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground"
+            />
+            <Input
+              v-model="searchQuery"
+              type="search"
+              placeholder="Search repositories..."
+              class="w-full pl-12"
+            />
+          </div>
 
-        <!-- Language Filter and Advanced Filters -->
-        <div class="flex gap-2">
-          <Select v-model:model-value="selectedLanguage">
-            <SelectTrigger class="w-full">
-              <SelectValue :placeholder="selectedLanguage || 'Select Language'" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Any Language</SelectItem>
-              <SelectItem 
-                v-for="lang in languages" 
-                :key="lang" 
-                :value="lang"
-              >
-                {{ lang }}
-              </SelectItem>
-            </SelectContent>
-          </Select>
+          <!-- Language Filter y Advanced Filters - Ahora se ajustan a su contenido -->
+          <div class="flex gap-2 shrink-0">
+            <Select v-model:model-value="selectedLanguage">
+              <SelectTrigger class="w-[180px]"> <!-- Ancho fijo para el trigger -->
+                <SelectValue :placeholder="selectedLanguage || 'Select Language'" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Any Language</SelectItem>
+                <SelectItem 
+                  v-for="lang in languages" 
+                  :key="lang" 
+                  :value="lang"
+                >
+                  {{ lang }}
+                </SelectItem>
+              </SelectContent>
+            </Select>
 
-          <FiltersDialog
-            v-model="filters"
-            @apply="onFiltersApply"
-          />
+            <FiltersDialog
+              v-model="filters"
+              @apply="onFiltersApply"
+            />
+          </div>
         </div>
 
         <!-- Active Filters -->

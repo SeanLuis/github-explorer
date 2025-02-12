@@ -182,3 +182,10 @@ export interface IAdvancedFilters {
   isFork?: boolean;
   isArchived?: boolean;
 }
+
+export interface ITopicInfo {
+  name: string;
+  description: string;
+  featured: boolean;
+  count?: number; // Hacemos el count opcional ya que no lo usaremos
+}

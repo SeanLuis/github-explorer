@@ -1,17 +1,10 @@
 <script setup lang="ts">
-import { CollectionService } from '~/services/collections'
+import { useCollectionsStore } from '~/stores/collections'
 
-const collections = ref([])
-const loading = ref(true)
+const collectionsStore = useCollectionsStore()
 
 onMounted(async () => {
-  try {
-    collections.value = await CollectionService.generateCollections()
-  } catch (error) {
-    console.error('Error loading collections:', error)
-  } finally {
-    loading.value = false
-  }
+  await collectionsStore.fetchCollections()
 })
 </script>
 
@@ -24,7 +17,7 @@ onMounted(async () => {
       </p>
     </section>
 
-    <div v-if="loading" class="flex justify-center py-8">
+    <div v-if="collectionsStore.loading" class="flex justify-center py-8">
       <div class="flex items-center gap-2 text-github-muted">
         <div class="w-5 h-5 border-2 border-current border-t-transparent rounded-full animate-spin" />
         <span>Loading collections...</span>
@@ -33,7 +26,7 @@ onMounted(async () => {
     
     <div v-else class="grid grid-cols-1 md:grid-cols-2 gap-6">
       <Card
-        v-for="collection in collections"
+        v-for="collection in collectionsStore.collections"
         :key="collection.id"
         class="hover:bg-muted/50 cursor-pointer transition-colors"
         @click="navigateTo(`/collections/${collection.id}`)"
