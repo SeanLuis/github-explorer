@@ -191,7 +191,7 @@ watch(topic, (currentTopic) => {
           v-for="repo in store.repositories"
           :key="repo.id"
           :repository="repo"
-          @preview="navigateTo(`/repositories/${repo.full_name}`)"
+          @preview="navigateTo(`/repository/${repo.full_name}`)"
         />
       </div>
 
