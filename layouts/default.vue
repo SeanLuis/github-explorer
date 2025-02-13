@@ -1,13 +1,4 @@
 <script setup lang="ts">
-useSeoMeta({
-  themeColor: '#ffffff',
-  mobileWebAppCapable: 'yes',
-  formatDetection: {
-    telephone: false
-  }
-})
-
-// Agregar breadcrumbs si no estamos en la página principal
 const route = useRoute()
 if (route.path !== '/') {
   useSchemaOrg([
@@ -30,6 +21,7 @@ const navigationItems = [
 ]
 
 const showMobileMenu = ref(false)
+const colorMode = useColorMode()
 </script>
 
 <template>
@@ -63,6 +55,19 @@ const showMobileMenu = ref(false)
           </div>
 
           <div class="flex items-center gap-2">
+            <a 
+              href="https://www.producthunt.com/posts/github-open-source-explorer?embed=true&utm_source=badge-featured&utm_medium=badge&utm_souce=badge-github-open-source-explorer" 
+              target="_blank"
+              class="hidden sm:block"
+            >
+              <img 
+                :src="`https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=873338&theme=${colorMode.value === 'dark' ? 'dark' : 'light'}&t=${colorMode.value === 'dark' ? '1739466543049' : '1739466353296'}`"
+                alt="GitHub Open Source Explorer - A modern open-source project explorer | Product Hunt"
+                style="width: 160px; height: 54px;"
+                width="160"
+                height="54"
+              />
+            </a>
             <ThemeToggle class="hidden sm:flex" />
             
             <Button
