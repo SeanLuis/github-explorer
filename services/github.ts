@@ -1,6 +1,7 @@
 const LANGUAGES = [
   'JavaScript', 'TypeScript', 'Python', 'Java', 'Go', 'Ruby', 'PHP',
-  'C++', 'C#', 'Swift', 'Kotlin', 'Rust', 'Vue', 'React'
+  'C', 'C++', 'C#', 'Swift', 'Kotlin', 'Rust', 'Vue', 'React', 'Angular',
+  'Svelte', 'Django', 'Flask', 'Ruby on Rails', 'Laravel', 'Spring', 'HTML', 'CSS'
 ]
 
 const TOPICS = [

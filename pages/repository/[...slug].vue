@@ -38,10 +38,27 @@ const languageColors = {
   JavaScript: '#f1e05a',
   TypeScript: '#3178c6',
   Python: '#3572A5',
-}
-
-const getLanguageColor = (language: string) => {
-  return languageColors[language] || '#8e8ea0'
+  CSS: '#563d7c',
+  HTML: '#e34c26',
+  Java: '#b07219',
+  Go: '#00ADD8',
+  Ruby: '#701516',
+  PHP: '#4F5D95',
+  C: '#555555',
+  'C++': '#f34b7d',
+  'C#': '#178600',
+  Swift: '#ffac45',
+  Kotlin: '#F18E33',
+  Rust: '#dea584',
+  Vue: '#41b883',
+  React: '#61dafb',
+  Angular: '#dd1b16',
+  Svelte: '#ff3e00',
+  Django: '#092e20',
+  Flask: '#000000',
+  'Ruby on Rails': '#CC0000',
+  Laravel: '#FF2D20',
+  Spring: '#6DB33F'
 }
 
 const repoStats = computed(() => [
