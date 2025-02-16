@@ -64,6 +64,25 @@ pnpm build
 pnpm preview
 ```
 
+## 🔌 VS Code Extension
+
+Explore GitHub repositories directly from your editor! Install our VS Code extension:
+
+[![VS Code Extension](https://img.shields.io/visual-studio-marketplace/v/SeanLuisGuadaRodriguez.opensource-explorer?label=VS%20Code%20Extension&color=blue)](https://marketplace.visualstudio.com/items?itemName=SeanLuisGuadaRodriguez.opensource-explorer)
+
+### Extension Features
+- 🔍 Search repositories from VS Code
+- ⭐ Star and fork repositories
+- 📁 Organize into collections
+- 🚀 Quick clone repositories
+- 📊 View repository details
+
+[Learn more about the VS Code extension](vscode-extension/README.md)
+
+## 🏆 Featured On
+
+<a href="https://www.producthunt.com/posts/github-open-source-explorer?utm_source=badge-featured&utm_medium=badge&utm_souce=badge-github&#0045;open&#0045;source&#0045;explorer" target="_blank"><img src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=873338&theme=light" alt="GitHub&#0032;Open&#0032;Source&#0032;Explorer - Discover&#0032;amazing&#0032;open&#0032;source&#0032;projects&#0032;on&#0032;GitHub | Product Hunt" style="width: 250px; height: 54px;" width="250" height="54" /></a>
+
 ## 🤝 Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.

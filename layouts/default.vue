@@ -161,5 +161,8 @@ const colorMode = useColorMode()
         </div>
       </div>
     </footer>
+
+    <!-- Agregamos el componente de extensión -->
+    <VSCodeExtensionDialog />
   </div>
 </template>
