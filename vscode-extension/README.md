@@ -2,14 +2,52 @@
 
 A powerful GitHub integration that brings repository management directly into your VS Code environment.
 
-![Overview](/public/screenshots/overview.jpeg)
+![Overview](../public/screenshots/overview.png)
+
+## What's New in 1.1.0 🎉
+
+### Major Features
+- **Enhanced Repository View**: New tabbed interface with Markdown support for READMEs
+- **Smart Clone Commands**: Automatic `git clone` prefix and path memory
+- **Improved Navigation**: Single-click details view and multi-tab support
+- **Custom Clone Paths**: Configure default paths for repository cloning
+- **Better Collection Management**: Enhanced organization and quick actions
+
+### Improvements
+- More intuitive repository details layout
+- Smart path handling across platforms
+- Enhanced error feedback
+- Dynamic tab titles
+- Better Markdown rendering
 
 ## Features Overview
+
+### Core Features
+- 🔍 Advanced repository search
+- ⭐ Star/unstar repositories
+- 🔄 Fork with one click
+- 📥 Smart clone with path memory
+- 📋 Quick copy clone commands
+- 📂 Collection organization
+- 🔄 Auto-refresh capability
+
+### Smart Workflow
+- Single-click repository details
+- Multi-tab support for comparisons
+- Configurable default clone paths
+- Enhanced command copying
+- Full Markdown README preview
+
+### Collections
+- Intuitive collection management
+- Quick repository organization
+- Favorite repositories access
+- Bulk actions support
 
 ### Main Toolbar 🛠️
 Quick access to essential actions like search, filter, and authentication.
 
-![Main Toolbar](/public/screenshots/toolbar.jpeg)
+![Main Toolbar](../public/screenshots/toolbar.png)
 
 - Search repositories globally
 - Filter by language and stars
@@ -20,7 +58,7 @@ Quick access to essential actions like search, filter, and authentication.
 ### Repository List 📋
 Browse and interact with repositories efficiently.
 
-![Repository List](/public/screenshots/repo-list.jpeg)
+![Repository List](../public/screenshots/repo-list.png)
 
 - Clear repository information display
 - Language detection
@@ -31,7 +69,7 @@ Browse and interact with repositories efficiently.
 ### Quick Actions ⚡
 Perform common operations directly from the list.
 
-![Quick Actions](/public/screenshots/quick-actions.jpeg)
+![Repository Actions](../public/screenshots/repo-actions.png)
 
 - Star/Unstar repositories
 - Fork repositories
@@ -43,7 +81,7 @@ Perform common operations directly from the list.
 ### Collections Management 📁
 Organize repositories into personal collections.
 
-![Collections](/public/screenshots/collections.jpeg)
+![Collections](../public/screenshots/collections.png)
 
 - Create custom collections
 - Add repositories from any view
@@ -53,7 +91,8 @@ Organize repositories into personal collections.
 ### Collection Actions 🔄
 Manage your collections efficiently.
 
-![Collection Actions](/public/screenshots/collection-actions.jpeg)
+![Collection Actions](../public/screenshots/collection-actions.png)
+![Collection Item Actions](../public/screenshots/collection-item-actions.png)
 
 - Rename collections
 - Delete collections
@@ -63,7 +102,8 @@ Manage your collections efficiently.
 ### Repository Details 📊
 Comprehensive repository information view.
 
-![Repository Details](/public/screenshots/details-view.jpeg)
+![Repository Details](../public/screenshots/repo-details.png)
+![Repository Details Preview](../public/screenshots/repo-details-preview.png)
 
 - README preview
 - Repository statistics
@@ -75,96 +115,72 @@ Comprehensive repository information view.
 ## Installation
 
 1. Open VS Code
-2. Press `Cmd+P` (Mac) / `Ctrl+P` (Windows/Linux)
-3. Type `ext install SeanLuisGuadaRodriguez.opensource-explorer`
+2. Quick Open (`Cmd+P` / `Ctrl+P`)
+3. Run: `ext install SeanLuisGuadaRodriguez.opensource-explorer`
 
-Or install through the [VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=SeanLuisGuadaRodriguez.opensource-explorer)
+[VS Code Marketplace Link](https://marketplace.visualstudio.com/items?itemName=SeanLuisGuadaRodriguez.opensource-explorer)
 
-## Getting Started
+## Configuration
 
-1. Click the GitHub icon in the activity bar
-2. Sign in to your GitHub account when prompted
-3. Start exploring repositories!
-
-![Getting Started](resources/public/screenshots/getting-started.jpeg)
-
-## Key Features
-
-### Authentication 🔐
-Secure GitHub authentication using VS Code's built-in auth system.
-```json
+### Basic Settings
+```jsonc
 {
-  "opensource-explorer.autoRefresh": true,
-  "opensource-explorer.refreshInterval": 300
+    // Core Settings
+    "opensource-explorer.autoRefresh": true,
+    "opensource-explorer.refreshInterval": 300,
+    "opensource-explorer.defaultClonePath": "/preferred/clone/path",
+
+    // Display Preferences
+    "opensource-explorer.showIssuesCount": true,
+    "opensource-explorer.showLanguageIcons": true,
+    "opensource-explorer.dateFormat": "medium",
+
+    // Search Configuration
+    "opensource-explorer.defaultSearchSort": "stars",
+    "opensource-explorer.minStars": 10,
+    "opensource-explorer.languageFilter": "",
+    "opensource-explorer.trendingPeriod": "week"
 }
 ```
 
-### Repository Search 🔍
-Advanced search capabilities with filters.
-```json
-{
-  "opensource-explorer.defaultSearchSort": "stars",
-  "opensource-explorer.languageFilter": "typescript"
-}
+### Custom Clone Path Setup
+```typescript
+// Set via command palette
+vscode.commands.executeCommand('opensource-explorer.pickClonePath');
+
+// Or configure directly in settings
+"opensource-explorer.defaultClonePath": "/your/preferred/path"
 ```
 
-### Collections 📚
-Create and manage repository collections.
-```json
-{
-  "opensource-explorer.showLanguageIcons": true,
-  "opensource-explorer.dateFormat": "medium"
-}
-```
+## Practical Usage
 
-## Keyboard Shortcuts
-
-| Command | Windows/Linux | Mac |
-|---------|--------------|-----|
-| Open Search | `Ctrl+Shift+F` | `Cmd+Shift+F` |
-| Open Filter | `Ctrl+Shift+P` | `Cmd+Shift+P` |
-| Quick Add to Collection | `Ctrl+Alt+C` | `Cmd+Alt+C` |
-| Show Repository Details | `Ctrl+Enter` | `Cmd+Enter` |
-
-## Extension Settings
-
-Configure the extension through VS Code settings:
-
-```json
-{
-  "opensource-explorer.autoRefresh": true,
-  "opensource-explorer.refreshInterval": 300,
-  "opensource-explorer.defaultSearchSort": "stars",
-  "opensource-explorer.showLanguageIcons": true,
-  "opensource-explorer.dateFormat": "medium",
-  "opensource-explorer.trendingPeriod": "week"
-}
-```
+### Quick Actions
+1. **Repository Details**: Single click on repository
+2. **Clone Repository**: 
+   ```bash
+   # Automatically copies with git clone prefix
+   git clone https://github.com/user/repo.git
+   ```
+3. **Multi-tab Comparison**: Right-click → "Open in New Tab"
+4. **Collection Management**: Right-click → "Add to Collection"
 
 ## Security Features
 
-- Secure token storage using encryption
-- VS Code's built-in authentication API
-- HTTPS for all API calls
-- No plain text token storage
+- Encrypted token storage
+- Secure credential handling
+- HTTPS enforcement
+- Zero plain-text storage
+- Session management
 
 ## Contributing
 
-We welcome contributions! See our [Contributing Guide](CONTRIBUTING.md) for details.
+See our [Contributing Guide](CONTRIBUTING.md) for development setup and guidelines.
 
-## Support
+## Support & Issues
 
-Having issues or suggestions? [Open an issue](https://github.com/SeanLuisGuadaRodriguez/opensource-explorer/issues) on our GitHub repository.
+[Open an issue](https://github.com/SeanLuisGuadaRodriguez/opensource-explorer/issues) for bug reports or feature requests.
 
 ## License
 
 [MIT License](LICENSE)
-
-## Release Notes
-
-### 1.0.0
-- Initial release
-- Repository exploration
-- Collections feature
-- Advanced search and filtering
-- Secure authentication
+````

@@ -68,6 +68,8 @@ pnpm preview
 
 Explore GitHub repositories directly from your editor! Install our VS Code extension:
 
+![Overview](public/screenshots/overview.png)
+
 [![VS Code Extension](https://img.shields.io/visual-studio-marketplace/v/SeanLuisGuadaRodriguez.opensource-explorer?label=VS%20Code%20Extension&color=blue)](https://marketplace.visualstudio.com/items?itemName=SeanLuisGuadaRodriguez.opensource-explorer)
 
 ### Extension Features

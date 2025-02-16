@@ -1,5 +1,125 @@
 # Changelog
 
+## [1.2.0] - 2025-02-16
+
+### Added
+- **Repository Discovery Features**
+  - New "Top Rated" repositories view with star-based filtering
+  - Enhanced trending repositories view with weekly updates
+  - Improved search functionality with better rate limit handling
+  - Smart retry mechanism for API rate limits
+  - Dynamic repository loading with progress indicators
+
+- **Search and Filter Enhancements**
+  - Advanced repository search with multiple criteria
+  - Language-based filtering system
+  - Minimum stars filter option
+  - Search within results capability
+  - Real-time search results updates
+
+- **User Interface Improvements**
+  - New repository list layout with rich metadata
+  - Enhanced repository details view
+  - Loading states and progress indicators
+  - Improved error messages and notifications
+  - Better rate limit feedback
+  - Status bar integration for GitHub connection status
+
+- **Performance Optimizations**
+  - Reduced API calls for repository details
+  - Optimized search results loading
+  - Improved data caching
+  - Better handling of GitHub API rate limits
+  - Smarter data refresh strategies
+
+- **Collections System**
+  - New Collections view for organizing repositories
+  - Add/Remove repositories to collections
+  - Collection tagging system
+  - Filter collections by tags
+  - Collection notes and annotations
+  - Bulk collection operations
+  - Collection search and filtering
+  - Collection sharing capabilities
+
+- **Repository Categories**
+  - Repository tagging system
+  - Custom categorization support
+  - Tag-based filtering
+  - Smart tag suggestions
+  - Category-based organization
+  - Multi-tag support
+  - Tag cloud visualization
+
+- **Note System**
+  - Add notes to repositories in collections
+  - Rich text note support
+  - Note search functionality
+  - Note history tracking
+  - Automatic note timestamps
+  - Note sharing capabilities
+
+- **Advanced Filtering**
+  - Tag-based repository filtering
+  - Collection-based filtering
+  - Combined filters support
+  - Filter history
+  - Filter presets
+  - Custom filter creation
+
+- **UI/UX Improvements**
+  - New collection management sidebar
+  - Enhanced tag management interface
+  - Improved collection organization
+  - Better note visualization
+  - Tag cloud display
+  - Collection statistics view
+
+### Fixed
+- Repository search rate limit issues
+- Search results pagination problems
+- Filter application consistency
+- UI freezing during large searches
+- Authentication token refresh issues
+- Collection refresh after modifications
+- Status bar update delays
+
+### Changed
+- Improved repository search algorithm
+- Enhanced filter application logic
+- Updated trending repositories calculation
+- Modified minimum stars filtering
+- Restructured repository list display
+- Optimized GitHub API usage
+- Updated error handling approach
+
+### Security
+- Enhanced token management
+- Improved API request security
+- Better error handling for failed requests
+- Added rate limit protection
+- Secure authentication flow improvements
+
+### New Commands
+- `opensource-explorer.addTag`: Add tags to collections
+- `opensource-explorer.removeTag`: Remove tags from collections
+- `opensource-explorer.filterByTag`: Filter collections by tags
+- `opensource-explorer.addNote`: Add notes to repositories
+- `opensource-explorer.editNote`: Edit repository notes
+- `opensource-explorer.createCollection`: Create new collections
+- `opensource-explorer.deleteCollection`: Delete collections
+- `opensource-explorer.renameCollection`: Rename collections
+- `opensource-explorer.addToCollection`: Add repositories to collections
+- `opensource-explorer.removeFromCollection`: Remove repositories from collections
+
+### Configuration
+Added new configuration options:
+- `collections.defaultView`: Default collections view mode
+- `collections.tagSuggestions`: Enable/disable tag suggestions
+- `collections.maxTags`: Maximum number of tags per collection
+- `notes.maxLength`: Maximum note length
+- `tags.caseSensitive`: Case sensitivity for tags
+
 ## [1.1.0] - 2025-02-16
 
 ### Added
