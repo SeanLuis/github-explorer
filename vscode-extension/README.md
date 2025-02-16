@@ -4,7 +4,7 @@ A powerful GitHub integration that brings repository management directly into yo
 
 ![Overview](../public/screenshots/overview.png)
 
-## What's New in 1.1.0 🎉
+## What's New in 1.2.0 🎉
 
 ### Major Features
 - **Enhanced Repository View**: New tabbed interface with Markdown support for READMEs
@@ -172,15 +172,6 @@ vscode.commands.executeCommand('opensource-explorer.pickClonePath');
 - Zero plain-text storage
 - Session management
 
-## Contributing
-
-See our [Contributing Guide](CONTRIBUTING.md) for development setup and guidelines.
-
 ## Support & Issues
 
-[Open an issue](https://github.com/SeanLuisGuadaRodriguez/opensource-explorer/issues) for bug reports or feature requests.
-
-## License
-
-[MIT License](LICENSE)
-````
+[Open an issue](https://github.com/SeanLuis/github-explorer/issues) for bug reports or feature requests.
