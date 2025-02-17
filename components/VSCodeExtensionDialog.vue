@@ -35,7 +35,7 @@ const closeFullImage = () => {
     <Button
       v-if="route.path !== '/extension'"
       @click="isOpen = true"
-      class="vscode-button fixed sm:bottom-20 sm:right-6 bottom-0 right-0 shadow-lg hover:shadow-xl transition-all duration-300 sm:w-auto w-full sm:rounded-md rounded-none"
+      class="vscode-button fixed sm:bottom-24 sm:right-6 bottom-0 right-0 shadow-md hover:shadow-lg transition-all duration-300 sm:w-auto w-full sm:rounded-md rounded-none"
       size="default"
       variant="outline"
     >

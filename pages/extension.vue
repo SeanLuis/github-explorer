@@ -249,7 +249,7 @@ const copyToClipboard = (text: string) => {
         <div class="text-center space-y-8">
           <div class="inline-flex items-center space-x-2 bg-muted/50 p-1 pl-2 pr-3 rounded-full text-sm">
             <span class="bg-primary/20 text-primary px-2 py-0.5 rounded-full text-xs font-medium">New</span>
-            <span>Version 1.2.0 is now available</span>
+            <span>Version 1.2.1 is now available</span>
           </div>
           
           <h1 class="text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight">
@@ -267,7 +267,7 @@ const copyToClipboard = (text: string) => {
               class="h-14 px-8 text-lg animate-shimmer bg-primary/90"
             >
               <Icon name="vscode-icons:file-type-vscode" class="mr-2 h-5 w-5" />
-              Install Extension
+              <a target="_blank" href="https://marketplace.visualstudio.com/items?itemName=SeanLuisGuadaRodriguez.opensource-explorer">Install Extension</a>
             </Button>
             <Button 
               variant="outline" 
@@ -431,49 +431,49 @@ const copyToClipboard = (text: string) => {
     </section>
 
     <!-- Installation Section -->
-    <section class="py-24 bg-accent/30">
+    <section class="py-12 sm:py-24 bg-accent/30">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="text-center mb-16">
-          <h2 class="text-3xl font-bold">Installation & Usage</h2>
-          <p class="text-xl text-muted-foreground mt-4">Get started in minutes</p>
+        <div class="text-center mb-8 sm:mb-16">
+          <h2 class="text-2xl sm:text-3xl font-bold">Installation & Usage</h2>
+          <p class="text-lg sm:text-xl text-muted-foreground mt-4">Get started in minutes</p>
         </div>
 
         <!-- Installation Tabs -->
-        <div class="mb-16">
-          <div class="flex items-center gap-4 mb-8 justify-center">
+        <div class="mb-8 sm:mb-16">
+          <div class="flex items-center gap-2 sm:gap-4 mb-6 sm:mb-8 justify-center">
             <Button 
               v-for="(method, key) in installSteps"
               :key="key"
               :variant="installTabs === key ? 'default' : 'outline'"
               @click="installTabs = key as keyof InstallSteps"
-              class="gap-2"
+              class="gap-2 text-sm sm:text-base"
             >
               <Icon :name="key === 'vscode' ? 'vscode-icons:file-type-vscode' : 'octicon:terminal-16'" class="w-4 h-4" />
               {{ method.title }}
             </Button>
           </div>
 
-          <div class="max-w-2xl mx-auto rounded-xl border bg-card p-6">
-            <div class="space-y-6">
+          <div class="max-w-2xl mx-auto rounded-xl border bg-card p-3 sm:p-6">
+            <div class="space-y-4 sm:space-y-6">
               <div 
                 v-for="(step, index) in installSteps[installTabs].steps"
                 :key="index"
-                class="flex items-start gap-4"
+                class="flex items-start gap-3 sm:gap-4"
               >
-                <div class="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-primary">
-                  <Icon :name="step.icon" class="w-4 h-4" />
+                <div class="flex h-6 w-6 sm:h-8 sm:w-8 items-center justify-center rounded-full bg-primary/10 text-primary">
+                  <Icon :name="step.icon" class="w-3 h-3 sm:w-4 sm:h-4" />
                 </div>
-                <div class="flex-1">
-                  <p class="text-sm text-muted-foreground mb-2">{{ step.text }}</p>
+                <div class="flex-1 min-w-0"> <!-- Added min-w-0 to prevent overflow -->
+                  <p class="text-xs sm:text-sm text-muted-foreground mb-2">{{ step.text }}</p>
                   <div v-if="step.code" class="relative">
-                    <pre class="rounded-lg bg-accent p-4"><code>{{ step.code }}</code></pre>
+                    <pre class="rounded-lg bg-accent p-2 sm:p-4 overflow-x-auto text-xs sm:text-sm"><code>{{ step.code }}</code></pre>
                     <Button
                       variant="secondary"
                       size="icon"
-                      class="absolute right-2 top-2"
+                      class="absolute right-1 top-1 sm:right-2 sm:top-2"
                       @click="copyToClipboard(step.code || '')"
                     >
-                      <Icon name="octicon:copy-16" class="w-4 h-4" />
+                      <Icon name="octicon:copy-16" class="w-3 h-3 sm:w-4 sm:h-4" />
                     </Button>
                   </div>
                 </div>
@@ -484,12 +484,13 @@ const copyToClipboard = (text: string) => {
 
         <!-- Configuration Tabs -->
         <div class="max-w-3xl mx-auto">
-          <div class="flex items-center gap-2 mb-8 justify-center">
+          <div class="flex flex-wrap items-center gap-2 mb-6 sm:mb-8 justify-center">
             <Button 
               v-for="(config, key) in configExamples"
               :key="key"
               :variant="configTabs === key ? 'default' : 'outline'"
               size="sm"
+              class="text-xs sm:text-sm"
               @click="configTabs = key"
             >
               {{ config.title }}
@@ -497,7 +498,7 @@ const copyToClipboard = (text: string) => {
           </div>
 
           <div class="relative rounded-xl border bg-card">
-            <div class="absolute right-4 top-4">
+            <div class="absolute right-2 top-2 sm:right-4 sm:top-4">
               <Button
                 variant="ghost"
                 size="icon"
@@ -506,7 +507,7 @@ const copyToClipboard = (text: string) => {
                 <Icon name="octicon:copy-16" class="w-4 h-4" />
               </Button>
             </div>
-            <pre class="p-6 overflow-x-auto"><code>{{ configExamples[configTabs].code }}</code></pre>
+            <pre class="p-3 sm:p-6 overflow-x-auto text-xs sm:text-sm"><code>{{ configExamples[configTabs].code }}</code></pre>
           </div>
         </div>
       </div>
@@ -527,7 +528,7 @@ const copyToClipboard = (text: string) => {
             class="h-14 px-8 text-lg"
           >
             <Icon name="vscode-icons:file-type-vscode" class="mr-2 h-5 w-5" />
-            Install Now - It's Free
+            <a target="_blank" href="https://marketplace.visualstudio.com/items?itemName=SeanLuisGuadaRodriguez.opensource-explorer">Install Now - It's Free</a>
           </Button>
           <Button 
             variant="outline" 
@@ -592,5 +593,18 @@ pre {
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
   font-size: 0.875rem;
   line-height: 1.5;
+  max-width: 100%;
+  word-wrap: break-word;
+  white-space: pre-wrap;
+}
+
+@media (max-width: 640px) {
+  pre {
+    font-size: 0.75rem;
+  }
+  
+  .overflow-x-auto {
+    -webkit-overflow-scrolling: touch;
+  }
 }
 </style>
