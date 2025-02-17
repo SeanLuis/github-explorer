@@ -35,7 +35,7 @@ const closeFullImage = () => {
     <Button
       v-if="route.path !== '/extension'"
       @click="isOpen = true"
-      class="vscode-button fixed sm:bottom-24 sm:right-6 bottom-0 right-0 shadow-md hover:shadow-lg transition-all duration-300 sm:w-auto w-full sm:rounded-md rounded-none"
+      class="vscode-button fixed bottom-0 left-1/2 transform -translate-x-1/2 shadow-md hover:shadow-lg transition-all duration-300 sm:w-auto w-full sm:rounded-md rounded-none sm:bottom-4"
       size="default"
       variant="outline"
     >
@@ -44,9 +44,7 @@ const closeFullImage = () => {
         class="mr-2 h-4 w-4"
       />
       VS Code Extension
-    </Button>
-
-    <Dialog :open="isOpen" @update:open="isOpen = $event">
+    </Button>    <Dialog :open="isOpen" @update:open="isOpen = $event">
       <DialogContent class="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle class="flex items-center gap-2">
