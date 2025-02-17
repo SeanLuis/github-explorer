@@ -33,7 +33,7 @@ const closeFullImage = () => {
   <div>
     <Button
       @click="isOpen = true"
-      class="fixed bottom-6 right-6 shadow-lg hover:shadow-xl transition-all duration-300"
+      class="vscode-button fixed sm:bottom-20 sm:right-6 bottom-0 right-0 shadow-lg hover:shadow-xl transition-all duration-300 sm:w-auto w-full sm:rounded-md rounded-none"
       size="default"
       variant="outline"
     >
@@ -45,7 +45,7 @@ const closeFullImage = () => {
     </Button>
 
     <Dialog :open="isOpen" @update:open="isOpen = $event">
-      <DialogContent class="sm:max-w-[600px]">
+      <DialogContent class="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle class="flex items-center gap-2">
             <Icon 
@@ -61,7 +61,7 @@ const closeFullImage = () => {
 
         <div class="relative group cursor-pointer" @click="openFullImage">
           <img 
-            src="/overview.jpeg" 
+            src="/screenshots/overview.png" 
             alt="VS Code Extension Preview"
             class="w-full rounded-lg border shadow-sm transition-all duration-300 group-hover:brightness-90"
           />
@@ -122,7 +122,7 @@ const closeFullImage = () => {
     </Dialog>
 
     <Dialog :open="showFullImage" @update:open="showFullImage = $event">
-      <DialogContent class="max-w-[90vw] h-[90vh] p-0">
+      <DialogContent class="max-w-[95vw] h-[90vh] p-0 overflow-hidden">
         <div class="relative h-full">
           <Button
             variant="ghost"
@@ -133,7 +133,7 @@ const closeFullImage = () => {
             <Icon name="octicon:x-16" class="h-4 w-4" />
           </Button>
           <img 
-            src="/overview.jpeg" 
+            src="/screenshots/overview.png" 
             alt="VS Code Extension Preview"
             class="w-full h-full object-contain"
           />
@@ -151,5 +151,25 @@ const closeFullImage = () => {
 
 .group:hover img {
   transform: scale(1.01);
+}
+
+@media (max-width: 640px) {
+  .dialog-content {
+    margin: 1rem;
+  }
+}
+
+.vscode-button {
+  z-index: 40;
+}
+
+:global(footer) {
+  margin-bottom: 60px;
+}
+
+@media (min-width: 640px) {
+  :global(footer) {
+    margin-bottom: 0;
+  }
 }
 </style>

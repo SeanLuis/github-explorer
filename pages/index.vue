@@ -10,6 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '#components'
+import { OrderOptions, SortOptions } from '~/types'
 
 // Agregar meta tags dinámicos
 useSeoMeta({
@@ -43,13 +44,22 @@ useSchemaOrg([
 
 const store = useGithubStore()
 const searchQuery = ref('')
-const filters = ref({
+interface Filters {
+  language: string;
+  topics: string[];
+  minStars: number;
+  hasTests: boolean;
+  isTemplate: boolean;
+  createdAfter: Date | null;
+}
+
+const filters = ref<Filters>({
   language: 'all',
-  topics: [] as string[],
+  topics: [],
   minStars: 1000,
   hasTests: false,
   isTemplate: false,
-  createdAfter: null as Date | null
+  createdAfter: null
 })
 const selectedLanguage = ref<string>('all')
 const languages = ref(GitHubService.getLanguages())
@@ -102,8 +112,8 @@ watch(selectedLanguage, (newValue) => {
 onMounted(() => {
   store.searchRepositories({ 
     minStars: 1000,
-    sort: 'stars',
-    order: 'desc'
+    sort: SortOptions.STARS,
+    order: OrderOptions.DESC
   })
 })
 
@@ -120,22 +130,29 @@ const activeFilters = computed(() => {
   return Object.entries(filters.value).filter(([key, value]) => {
     if (key === 'language') return value !== 'all'
     if (Array.isArray(value)) return value.length > 0
-    if (key === 'minStars') return value > 1000
+    if (key === 'minStars') return typeof value === 'number' && value > 1000
     return value
   })
 })
 
-const clearFilter = (key: string) => {
-  if (key === 'language') {
-    filters.value[key] = 'all'
-  } else if (Array.isArray(filters.value[key])) {
-    filters.value[key] = []
-  } else if (key === 'minStars') {
-    filters.value[key] = 1000
-  } else if (typeof filters.value[key] === 'boolean') {
-    filters.value[key] = false
-  } else {
-    filters.value[key] = null
+const clearFilter = (key: keyof Filters) => {
+  switch(key) {
+    case 'language':
+      filters.value.language = 'all'
+      break;
+    case 'topics':
+      filters.value.topics = []
+      break;
+    case 'minStars':
+      filters.value.minStars = 1000
+      break;
+    case 'hasTests':
+    case 'isTemplate':
+      filters.value[key] = false
+      break;
+    case 'createdAfter':
+      filters.value.createdAfter = null
+      break;
   }
   onFiltersApply()
 }
@@ -146,7 +163,7 @@ const clearFilter = (key: string) => {
     <section class="text-center py-16 mb-8 border rounded-xl bg-gradient-to-br from-primary/5 to-background relative overflow-hidden">
       <div class="absolute inset-0 bg-grid-pattern opacity-10" />
       
-      <div class="relative">
+      <div class="relative px-4 sm:px-6">
         <h1 class="scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl mb-4">
           Discover Amazing Open Source Projects
         </h1>
@@ -155,7 +172,7 @@ const clearFilter = (key: string) => {
         </p>
         
         <div class="max-w-4xl mx-auto space-y-4">
-          <div class="flex flex-col sm:flex-row gap-4">
+          <div class="flex flex-col sm:flex-row gap-4 px-2 sm:px-0">
             <div class="relative flex-1">
               <Icon 
                 name="octicon:search-16"
@@ -195,7 +212,7 @@ const clearFilter = (key: string) => {
 
           <div 
             v-if="activeFilters.length > 0"
-            class="flex flex-wrap gap-2 mt-4"
+            class="flex flex-wrap gap-2 mt-4 px-2 sm:px-0"
           >
             <Badge 
               v-for="[key, value] in activeFilters" 
@@ -208,7 +225,7 @@ const clearFilter = (key: string) => {
                 variant="ghost"
                 size="icon"
                 class="h-4 w-4 hover:bg-destructive/20"
-                @click="clearFilter(key)"
+                @click="clearFilter(key as keyof Filters)"
               >
                 <Icon name="octicon:x-16" class="h-3 w-3" />
               </Button>
@@ -218,7 +235,7 @@ const clearFilter = (key: string) => {
       </div>
     </section>
 
-    <div>
+    <div class="px-4 sm:px-6">
       <LoadingRepositories v-if="store.loading" />
 
       <div v-else>
