@@ -13,6 +13,7 @@ import { useColorMode } from '@vueuse/core'
 const isOpen = ref(false)
 const showFullImage = ref(false)
 const colorMode = useColorMode()
+const route = useRoute()
 
 const vscodeLogo = computed(() => {
   return colorMode.value === 'dark' 
@@ -32,6 +33,7 @@ const closeFullImage = () => {
 <template>
   <div>
     <Button
+      v-if="route.path !== '/extension'"
       @click="isOpen = true"
       class="vscode-button fixed sm:bottom-20 sm:right-6 bottom-0 right-0 shadow-lg hover:shadow-xl transition-all duration-300 sm:w-auto w-full sm:rounded-md rounded-none"
       size="default"

@@ -18,6 +18,7 @@ const navigationItems = [
   { label: 'Trending', icon: 'octicon:flame-24', path: '/trending' },
   { label: 'Topics', icon: 'octicon:hash-24', path: '/topics' },
   { label: 'Collections', icon: 'octicon:package-24', path: '/collections' },
+  { label: 'VS Code Extension', icon: 'vscode-icons:file-type-vscode', path: '/extension' },
 ]
 
 const showMobileMenu = ref(false)
