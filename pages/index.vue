@@ -10,6 +10,7 @@ import {
   SelectValue,
 } from '#components'
 import { OrderOptions, SortOptions } from '~/types'
+import SearchInput from '~/components/SearchInput.vue'
 
 // Agregar meta tags dinámicos
 useSeoMeta({
@@ -170,6 +171,7 @@ const clearFilter = (key: keyof Filters) => {
             <div class="relative flex-1">
               <SearchInput
                 v-model="searchQuery"
+                mode="modal"
                 @search="onSearch"
               />
             </div>
