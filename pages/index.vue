@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { useGithubStore } from '~/stores/github'
-import { useDebounceFn } from '@vueuse/core'
 import { ref, watch, onMounted, computed } from 'vue'
 import { GitHubService } from '~/services/github'
 import {
@@ -64,19 +63,13 @@ const filters = ref<Filters>({
 const selectedLanguage = ref<string>('all')
 const languages = ref(GitHubService.getLanguages())
 
-const debouncedSearch = useDebounceFn(() => {
-  if (!searchQuery.value && !selectedLanguage.value) return
-  
+const onSearch = () => {
   store.searchRepositories({
     query: searchQuery.value,
-    language: selectedLanguage.value,
-    minStars: 100
+    language: selectedLanguage.value === 'all' ? undefined : selectedLanguage.value,
+    minStars: filters.value.minStars
   })
-}, 500)
-
-watch([searchQuery, selectedLanguage], () => {
-  debouncedSearch()
-})
+}
 
 const onFiltersApply = () => {
   const searchParams = {
@@ -160,8 +153,9 @@ const clearFilter = (key: keyof Filters) => {
 
 <template>
   <div>
-    <section class="text-center py-16 mb-8 border rounded-xl bg-gradient-to-br from-primary/5 to-background relative overflow-hidden">
-      <div class="absolute inset-0 bg-grid-pattern opacity-10" />
+    <section class="text-center py-16 mb-8 border rounded-xl bg-gradient-to-br from-primary/5 to-background relative">
+      <!-- Removido overflow-hidden de la section y movido solo al div del patrón -->
+      <div class="absolute inset-0 bg-grid-pattern opacity-10 overflow-hidden" />
       
       <div class="relative px-4 sm:px-6">
         <h1 class="scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl mb-4">
@@ -174,15 +168,9 @@ const clearFilter = (key: keyof Filters) => {
         <div class="max-w-4xl mx-auto space-y-4">
           <div class="flex flex-col sm:flex-row gap-4 px-2 sm:px-0">
             <div class="relative flex-1">
-              <Icon 
-                name="octicon:search-16"
-                class="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground"
-              />
-              <Input
+              <SearchInput
                 v-model="searchQuery"
-                type="search"
-                placeholder="Search repositories..."
-                class="w-full pl-12"
+                @search="onSearch"
               />
             </div>
 
