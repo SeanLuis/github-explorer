@@ -109,53 +109,45 @@ watch(() => props.modelValue, (newValue) => {
           class="mr-2 h-4 w-4 shrink-0 opacity-50"
         />
         
-        <!-- Modificar el contenedor del input -->
-        <div class="relative flex-1 overflow-hidden">
-          <div class="relative w-full overflow-x-auto search-scroll-container">
-            <!-- Capa de resaltado con contenido -->
-            <div 
-              class="search-highlight absolute inset-0 whitespace-pre pointer-events-none flex items-center"
-              :style="{ minWidth: '100%' }"
-            >
-              <template v-for="(part, index) in coloredParts" :key="index">
-                <span 
-                  v-if="part.type === 'value'" 
-                  class="search-badge"
-                >{{ part.text }}</span>
-                <span
-                  v-else
-                  :class="{ 'text-primary font-medium': part.type === 'qualifier' }"
-                >{{ part.text }}</span>
-              </template>
-              <!-- Espacio para el cursor -->
-              <span class="pl-px"></span>
-            </div>
-
-            <!-- Input real -->
-            <input
-              ref="input"
-              :value="searchValue"
-              type="text"
-              class="search-input-field relative w-full"
-              :class="{ 'has-content': searchValue }"
-              placeholder="Search repositories..."
-              @input="handleInput"
-              @keydown="handleKeyDown"
-              @focus="handleFocus"
-              @blur="handleBlur"
-              @scroll="handleInputScroll"
-            />
+        <!-- Simplificar el contenedor del input -->
+        <div class="relative flex-1">
+          <!-- Colored preview -->
+          <div 
+            aria-hidden="true"
+            class="search-input-mirror absolute inset-0 pointer-events-none flex items-center overflow-hidden"
+          >
+            <template v-for="(part, index) in coloredParts" :key="index">
+              <span 
+                v-if="part.type === 'value'" 
+                class="search-badge"
+              >{{ part.text }}</span>
+              <span
+                v-else
+                :class="{
+                  'text-primary font-medium': part.type === 'qualifier',
+                }"
+              >{{ part.text }}</span>
+            </template>
+            <!-- Agregar el cursor aquí también -->
+            <span v-if="isInputFocused" class="typing-cursor"></span>
           </div>
-          <!-- Cursor que se mueve con el input -->
-          <span 
-            v-if="isInputFocused && (isExpanded || isInlineMode)"
-            class="typing-cursor absolute"
-            :style="{ 
-              left: `${cursorPosition}px`,
-              top: '50%',
-              transform: 'translateY(-50%)'
+
+          <input
+            ref="input"
+            :value="searchValue"
+            type="text"
+            class="search-input w-full relative"
+            :class="{ 
+              'has-content': searchValue,
+              'text-transparent': searchValue
             }"
-          ></span>
+            placeholder="Search repositories..."
+            @input="handleInput"
+            @keydown="handleKeyDown"
+            @focus="handleFocus"
+            @blur="handleBlur"
+            @scroll="handleInputScroll"
+          />
         </div>
 
         <kbd 
@@ -368,6 +360,8 @@ watch(() => props.modelValue, (newValue) => {
   background-color: currentColor;
   margin-left: 1px;
   animation: blink 1s step-end infinite;
+  position: relative;
+  top: 1px;
 }
 
 @keyframes blink {
@@ -853,5 +847,33 @@ watch(() => props.modelValue, (newValue) => {
 .suggestion-item.is-used:hover .search-badge-mini {
   background-color: hsl(var(--destructive)/0.2);
   color: hsl(var(--destructive));
+}
+
+.search-input-field {
+  background: transparent;
+  outline: none;
+  position: relative;
+  white-space: pre;
+  padding: 2px 0;
+  caret-color: currentColor; /* Asegura que el cursor sea visible */
+  color: currentColor; /* Color del texto igual al tema actual */
+}
+
+/* Solo hacer el texto transparente cuando tiene contenido y no está en modo inline */
+.search-input-field.has-content:not(.inline-mode) {
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Asegurar que el cursor sea visible en modo inline */
+.search-input-field.inline-mode {
+  color: currentColor;
+  -webkit-text-fill-color: currentColor;
+}
+
+/* Mantener el placeholder visible */
+.search-input-field::placeholder {
+  -webkit-text-fill-color: initial;
+  color: hsl(var(--muted-foreground));
 }
 </style>
