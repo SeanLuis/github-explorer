@@ -171,7 +171,7 @@ const clearFilter = (key: keyof Filters) => {
             <div class="relative flex-1">
               <SearchInput
                 v-model="searchQuery"
-                mode="modal"
+                mode="inline"
                 @search="onSearch"
               />
             </div>

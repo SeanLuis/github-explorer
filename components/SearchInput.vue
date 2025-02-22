@@ -1,326 +1,71 @@
 <script setup lang="ts">
-import { ref, watch, computed, nextTick, onMounted, onUnmounted } from 'vue'
-// Si quieres usar useTimeout de VueUse, necesitas importarlo:
-// import { useTimeout } from '@vueuse/core'
-
-interface SearchToken {
-  type: 'qualifier' | 'text' | 'space';
-  value: string;
-  qualifier?: string;
-}
+import { watch, computed } from 'vue'
+import { useQualifiers } from '../composables/useQualifiers'
+import { useSearchParser } from '../composables/useSearchParser'
+import { useScrollLock } from '../composables/useScrollLock'
+import { useSearchInput } from '../composables/useSearchInput'
+import { useSearchInteractions } from '../composables/useSearchInteractions'
 
 const props = defineProps<{
-  modelValue: string;
-  mode?: 'inline' | 'modal'; // Nuevo prop para el modo de visualización
+  modelValue: string
+  mode?: 'inline' | 'modal'
 }>()
 
 const emit = defineEmits<{
-  (e: 'update:modelValue', value: string): void;
-  (e: 'search'): void;
+  (e: 'update:modelValue', value: string): void
+  (e: 'search'): void
 }>()
 
-const input = ref<HTMLInputElement | null>(null)
-const searchInput = ref(props.modelValue)
-const showSuggestions = ref(false)
-const cursorPosition = ref(0)
-const containerWidth = ref(0)
-const searchContainer = ref<HTMLDivElement | null>(null)
-const dropdownPosition = ref({ left: 0, top: 0 })
-const isInputFocused = ref(false)
-const isExpanded = ref(false)
-const originalPosition = ref(0)
+// 1. Primero inicializamos los composables base
+const { QUALIFIERS } = useQualifiers()
+const { parseSearchTokens, colorText } = useSearchParser()
+const { lockScroll, unlockScroll } = useScrollLock()
 
-const isInlineMode = computed(() => props.mode === 'inline')
-
-// Función simplificada para colorear el texto
-const colorText = (text: string) => {
-  const parts: { text: string; type: 'qualifier' | 'value' | 'normal' }[] = []
-  let currentPosition = 0
-
-  while (currentPosition < text.length) {
-    let matched = false
-
-    // Buscar qualifiers
-    for (const qualifier of Object.keys(QUALIFIERS)) {
-      if (text.slice(currentPosition).toLowerCase().startsWith(qualifier.toLowerCase())) {
-        // Agregar qualifier
-        parts.push({
-          text: qualifier,
-          type: 'qualifier'
-        })
-        
-        currentPosition += qualifier.length
-        
-        // Buscar valor hasta el espacio
-        let valueStart = currentPosition
-        while (currentPosition < text.length && text[currentPosition] !== ' ') {
-          currentPosition++
-        }
-        
-        if (currentPosition > valueStart) {
-          parts.push({
-            text: text.slice(valueStart, currentPosition),
-            type: 'value'
-          })
-        }
-        
-        matched = true
-        break
-      }
-    }
-
-    if (!matched) {
-      // Agregar texto normal hasta el siguiente qualifier o final
-      let normalText = ''
-      while (currentPosition < text.length) {
-        let isQualifier = false
-        for (const qualifier of Object.keys(QUALIFIERS)) {
-          if (text.slice(currentPosition).toLowerCase().startsWith(qualifier.toLowerCase())) {
-            isQualifier = true
-            break
-          }
-        }
-        if (isQualifier) break
-        normalText += text[currentPosition]
-        currentPosition++
-      }
-      if (normalText) {
-        parts.push({
-          text: normalText,
-          type: 'normal'
-        })
-      }
-    }
-  }
-
-  return parts
+// 1. Crear una función handleFocus que usaremos más tarde
+const handleFocusWrapper = () => {
+  searchInteractions.handleFocus()
 }
 
-const coloredParts = computed(() => colorText(searchInput.value))
+// 2. Inicializar useSearchInput primero, pasando la función wrapper
+const searchInput = useSearchInput(handleFocusWrapper)
 
-const handleInput = (event: Event) => {
-  const value = (event.target as HTMLInputElement).value
-  searchInput.value = value
-  emit('update:modelValue', value)
-  nextTick(() => {
-    updateCursorPosition() // Actualizar la posición del cursor después del render
-  })
-}
+// 3. Inicializar useSearchInteractions después
+const searchInteractions = useSearchInteractions(
+  props,
+  emit,
+  searchInput.input,
+  searchInput.updateCursorPosition,
+  lockScroll,
+  unlockScroll
+)
 
-// GitHub search qualifiers
-const QUALIFIERS = {
-  'repo:': { label: 'Repository (user/repo)', icon: 'octicon:repo-16' },
-  'user:': { label: 'User', icon: 'octicon:person-16' },
-  'org:': { label: 'Organization', icon: 'octicon:organization-16' },
-  'in:': { label: 'Search in', icon: 'octicon:search-16' },
-  'size:': { label: 'Size', icon: 'octicon:file-16' },
-  'stars:': { label: 'Stars', icon: 'octicon:star-16' },
-  'language:': { label: 'Language', icon: 'octicon:code-16' },
-  'created:': { label: 'Created date', icon: 'octicon:calendar-16' },
-  'pushed:': { label: 'Push date', icon: 'octicon:git-commit-16' },
-  'topic:': { label: 'Topic', icon: 'octicon:hash-16' },
-  'is:': { label: 'State', icon: 'octicon:circle-16' },
-  'fork:': { label: 'Fork', icon: 'octicon:repo-forked-16' },
-} as const
+// 4. Desestructurar los valores que necesitamos de ambos composables
+const {
+  input,
+  cursorPosition,
+  searchContainer,
+  isInputFocused,
+  handleInputScroll
+} = searchInput
 
-// Parse search input into tokens
-const parseSearchTokens = (value: string): SearchToken[] => {
-  const tokens: SearchToken[] = []
-  let i = 0
+const {
+  searchInput: searchValue,
+  showSuggestions,
+  isInlineMode,
+  searchTokens,
+  isExpanded,
+  handleInput,
+  handleFocus,
+  handleBlur,
+  handleClose,
+  handleKeyDown,
+  handleSuggestionClick,
+  removeQualifier
+} = searchInteractions
 
-  while (i < value.length) {
-    let matchedQualifier = false
-    
-    // Buscar cualquier qualifier al inicio de la posición actual
-    for (const qualifier of Object.keys(QUALIFIERS)) {
-      if (value.slice(i).toLowerCase().startsWith(qualifier.toLowerCase())) {
-        let j = i + qualifier.length
-        let qualifierValue = ''
-        
-        // Capturar todo hasta el próximo espacio o el final
-        while (j < value.length && value[j] !== ' ') {
-          qualifierValue += value[j]
-          j++
-        }
-
-        if (qualifierValue) {
-          tokens.push({
-            type: 'qualifier',
-            qualifier: qualifier.slice(0, -1),
-            value: qualifierValue
-          })
-        }
-
-        i = j
-        matchedQualifier = true
-        break
-      }
-    }
-
-    if (!matchedQualifier) {
-      if (value[i] === ' ') {
-        tokens.push({ type: 'space', value: ' ' })
-      } else {
-        let textValue = ''
-        while (i < value.length && !Object.keys(QUALIFIERS).some(q => 
-          value.slice(i).toLowerCase().startsWith(q.toLowerCase())
-        ) && value[i] !== ' ') {
-          textValue += value[i]
-          i++
-        }
-        if (textValue) {
-          tokens.push({ type: 'text', value: textValue })
-        }
-        continue
-      }
-    }
-    i++
-  }
-
-  return tokens
-}
-
-const searchTokens = computed(() => parseSearchTokens(searchInput.value))
-
-// Función para obtener las partes coloreadas del texto
-const getColoredParts = computed(() => {
-  const parts: { text: string; isQualifier: boolean; isValue: boolean }[] = []
-  let text = searchInput.value
-  let position = 0
-
-  while (position < text.length) {
-    let matched = false
-    
-    // Buscar qualifiers
-    for (const qualifier of Object.keys(QUALIFIERS)) {
-      if (text.slice(position).toLowerCase().startsWith(qualifier.toLowerCase())) {
-        // Agregar el qualifier
-        parts.push({
-          text: text.slice(position, position + qualifier.length),
-          isQualifier: true,
-          isValue: false
-        })
-        
-        position += qualifier.length
-        
-        // Buscar el valor hasta el siguiente espacio
-        let valueStart = position
-        while (position < text.length && text[position] !== ' ') {
-          position++
-        }
-        
-        if (position > valueStart) {
-          parts.push({
-            text: text.slice(valueStart, position),
-            isQualifier: false,
-            isValue: true
-          })
-        }
-        
-        matched = true
-        break
-      }
-    }
-    
-    if (!matched) {
-      // Agregar texto normal hasta el siguiente qualifier o espacio
-      let normalText = ''
-      while (position < text.length) {
-        let foundQualifier = false
-        for (const qualifier of Object.keys(QUALIFIERS)) {
-          if (text.slice(position).toLowerCase().startsWith(qualifier.toLowerCase())) {
-            foundQualifier = true
-            break
-          }
-        }
-        if (foundQualifier) break
-        normalText += text[position]
-        position++
-      }
-      if (normalText) {
-        parts.push({
-          text: normalText,
-          isQualifier: false,
-          isValue: false
-        })
-      }
-    }
-  }
-  
-  return parts
-})
-
-// Manejadores de eventos actualizados
-const lockScroll = () => {
-  originalPosition.value = window.scrollY
-  document.body.style.position = 'fixed'
-  document.body.style.top = `-${originalPosition.value}px`
-  document.body.style.width = '100%'
-}
-
-const unlockScroll = () => {
-  document.body.style.position = ''
-  document.body.style.top = ''
-  document.body.style.width = ''
-  window.scrollTo(0, originalPosition.value)
-}
-
-const handleFocus = () => {
-  isInputFocused.value = true
-  showSuggestions.value = true
-  
-  if (!isInlineMode.value) {
-    isExpanded.value = true
-    lockScroll()
-    nextTick(() => {
-      input.value?.focus()
-    })
-  }
-}
-
-const closeSearch = () => {
-  isInputFocused.value = false
-  showSuggestions.value = false
-  isExpanded.value = false
-  unlockScroll()
-}
-
-// Modificar el handleBlur para que solo se ejecute cuando realmente queremos cerrar
-const handleBlur = (event: FocusEvent) => {
-  // Si el elemento relacionado está dentro del diálogo, no hacer nada
-  const dialogContent = document.querySelector('.search-dialog-content')
-  if (dialogContent?.contains(event.relatedTarget as Node)) {
-    return
-  }
-  
-  // Si no hay elemento relacionado (clic fuera) o está fuera del diálogo, cerrar
-  if (!event.relatedTarget || !dialogContent?.contains(event.relatedTarget as Node)) {
-    closeSearch()
-  }
-}
-
-// Agregar método para cerrar con el botón X
-const handleClose = () => {
-  closeSearch()
-}
-
-// Add escape key handler
-const handleKeyDown = (event: KeyboardEvent) => {
-  if (event.key === 'Enter') {
-    emit('search')
-    if (!isInlineMode.value) {
-      closeSearch()
-    }
-  } else if (event.key === 'Escape' && isExpanded.value) {
-    closeSearch()
-  }
-  // Permitir navegación normal con teclas de flecha
-  updateCursorPosition()
-}
-
-// Suggestions system
+// 4. Finalmente las computed properties que dependen de todo lo anterior
+const coloredParts = computed(() => colorText(searchValue.value))
 const suggestions = computed(() => {
-  // Obtener los qualifiers usados con sus valores
   const usedQualifiers = searchTokens.value
     .filter(token => token.type === 'qualifier')
     .map(token => ({
@@ -328,7 +73,6 @@ const suggestions = computed(() => {
       value: token.value
     }))
 
-  // Devolver todos los qualifiers con su estado de uso
   return Object.keys(QUALIFIERS).map(qualifier => ({
     qualifier,
     isUsed: usedQualifiers.some(used => used.qualifier === qualifier),
@@ -336,159 +80,10 @@ const suggestions = computed(() => {
   }))
 })
 
-// Modificar la función removeQualifier para que solo elimine el qualifier específico con su valor exacto
-const removeQualifier = (qualifierToRemove: string, valueToRemove: string) => {
-  const tokens = searchTokens.value
-  let newSearchText = ''
-
-  for (let i = 0; i < tokens.length; i++) {
-    const token = tokens[i]
-    
-    // Solo eliminar si coincide tanto el qualifier como el valor
-    if (token.type === 'qualifier' && 
-        token.qualifier + ':' === qualifierToRemove && 
-        token.value === valueToRemove) {
-      // Saltar este token y el siguiente espacio si existe
-      if (i + 1 < tokens.length && tokens[i + 1].type === 'space') {
-        i++
-      }
-      continue
-    }
-    
-    newSearchText += token.value
-  }
-
-  searchInput.value = newSearchText.trim()
-  emit('update:modelValue', searchInput.value)
-  nextTick(() => {
-    input.value?.focus()
-    updateCursorPosition()
-  })
-}
-
-const updateCursorPosition = () => {
-  if (input.value) {
-    const inputElement = input.value
-    cursorPosition.value = inputElement.selectionStart || 0
-    const container = inputElement.parentElement
-
-    if (container) {
-      const measureElement = document.createElement('span')
-      measureElement.style.font = window.getComputedStyle(inputElement).font
-      measureElement.style.visibility = 'hidden'
-      measureElement.style.position = 'absolute'
-      measureElement.style.whiteSpace = 'pre'
-      measureElement.textContent = inputElement.value.substring(0, inputElement.selectionStart || 0)
-      document.body.appendChild(measureElement)
-      
-      const cursorOffset = measureElement.offsetWidth
-      const containerWidth = container.offsetWidth
-      const scrollLeft = container.scrollLeft
-      
-      document.body.removeChild(measureElement)
-
-      // Si el cursor está cerca del final visible, scroll automático
-      if (cursorOffset > scrollLeft + containerWidth - 80) {
-        container.scrollLeft = cursorOffset - containerWidth + 80
-      }
-      // Si el cursor está cerca del inicio visible
-      else if (cursorOffset < scrollLeft + 80) {
-        container.scrollLeft = Math.max(0, cursorOffset - 80)
-      }
-    }
-  }
-}
-
-// Función para manejar el cierre retardado de sugerencias
-const updateContainerWidth = () => {
-  if (searchContainer.value) {
-    containerWidth.value = searchContainer.value.offsetWidth
-  }
-}
-
-// Actualizar la posición del dropdown cuando se hace scroll
-const updateDropdownPosition = () => {
-  if (searchContainer.value) {
-    containerWidth.value = searchContainer.value.offsetWidth
-  }
-}
-
-const handleSuggestionClick = (suggestion: string) => {
-  const currentValue = searchInput.value
-  // Añadir espacio si el valor actual no termina en espacio
-  const space = currentValue && !currentValue.endsWith(' ') ? ' ' : ''
-  searchInput.value = currentValue + space + suggestion
-  emit('update:modelValue', searchInput.value)
-  
-  // Solo actualizar el cursor y mantener el foco
-  nextTick(() => {
-    input.value?.focus()
-    updateCursorPosition()
-    showSuggestions.value = true // Mantener las sugerencias visibles
-  })
-}
-
-// Añadir manejo de scroll sincronizado
-const handleInputScroll = (event: Event) => {
-  const input = event.target as HTMLElement
-  const mirror = input.previousElementSibling as HTMLElement
-  if (mirror) {
-    mirror.scrollLeft = input.scrollLeft
-  }
-}
-
-onMounted(() => {
-  updateContainerWidth()
-  window.addEventListener('resize', updateContainerWidth)
-
-  // 1. Global slash shortcut
-  window.addEventListener('keydown', handleGlobalShortcut)
-})
-
-onUnmounted(() => {
-  window.removeEventListener('resize', updateContainerWidth)
-  window.removeEventListener('keydown', handleGlobalShortcut)
-})
-
-// Simplify global shortcut handler to only use "/"
-const handleGlobalShortcut = (event: KeyboardEvent) => {
-  // Only trigger if it's exactly the "/" key and not inside an input/textarea
-  if (event.key === '/' && !['INPUT', 'TEXTAREA'].includes((event.target as HTMLElement).tagName)) {
-    event.preventDefault()
-    handleFocus()
-    nextTick(() => {
-      // Remove the "/" character that was typed
-      if (input.value) {
-        input.value.value = input.value.value.replace('/', '')
-      }
-    })
-  }
-}
-
+// Watchers
 watch(() => props.modelValue, (newValue) => {
-  if (newValue !== searchInput.value) {
-    searchInput.value = newValue
-  }
-})
-
-// Modificar el computed de sugerencias para separar en usados y no usados
-const suggestionGroups = computed(() => {
-  const usedQualifiers = searchTokens.value
-    .filter(token => token.type === 'qualifier')
-    .map(token => ({
-      qualifier: token.qualifier + ':',
-      value: token.value
-    }))
-
-  const allQualifiers = Object.keys(QUALIFIERS).map(qualifier => ({
-    qualifier,
-    isUsed: usedQualifiers.some(used => used.qualifier === qualifier),
-    value: usedQualifiers.find(used => used.qualifier === qualifier)?.value
-  }))
-
-  return {
-    used: allQualifiers.filter(q => q.isUsed),
-    available: allQualifiers.filter(q => !q.isUsed)
+  if (newValue !== searchValue.value) {
+    searchValue.value = newValue
   }
 })
 </script>
@@ -498,8 +93,9 @@ const suggestionGroups = computed(() => {
     <!-- Normal search input -->
     <div 
       ref="searchContainer"
-      class="relative w-full"
+      class="relative w-full cursor-pointer"
       :class="{ 'search-active': isExpanded }"
+      @click="handleFocus" 
     >
       <div 
         class="relative flex items-center w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background transition-all duration-200"
@@ -538,10 +134,10 @@ const suggestionGroups = computed(() => {
             <!-- Input real -->
             <input
               ref="input"
-              :value="searchInput"
+              :value="searchValue"
               type="text"
               class="search-input-field relative w-full"
-              :class="{ 'has-content': searchInput }"
+              :class="{ 'has-content': searchValue }"
               placeholder="Search repositories..."
               @input="handleInput"
               @keydown="handleKeyDown"
@@ -552,7 +148,7 @@ const suggestionGroups = computed(() => {
           </div>
           <!-- Cursor que se mueve con el input -->
           <span 
-            v-if="isInputFocused" 
+            v-if="isInputFocused && (isExpanded || isInlineMode)"
             class="typing-cursor absolute"
             :style="{ 
               left: `${cursorPosition}px`,
@@ -616,7 +212,7 @@ const suggestionGroups = computed(() => {
       <div 
         v-if="!isInlineMode && isExpanded" 
         class="search-overlay"
-        @click="handleClose"
+        @click.self="handleClose"
       >
         <div 
           class="search-dialog"
@@ -627,7 +223,8 @@ const suggestionGroups = computed(() => {
               <h2 class="text-lg font-semibold">Search repositories</h2>
               <button 
                 class="p-1 rounded-md hover:bg-accent"
-                @click="handleClose"
+                type="button"
+                @click.stop="handleClose"
               >
                 <Icon name="octicon:x-16" class="h-4 w-4" />
               </button>
@@ -660,10 +257,10 @@ const suggestionGroups = computed(() => {
 
                 <input
                   ref="input"
-                  :value="searchInput"
+                  :value="searchValue"
                   type="text"
                   class="search-input w-full bg-transparent outline-none relative"
-                  :class="{ 'text-transparent': searchInput }"
+                  :class="{ 'text-transparent': searchValue }"
                   placeholder="Search repositories..."
                   @input="handleInput"
                   @keydown="handleKeyDown"
