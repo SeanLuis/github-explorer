@@ -1,4 +1,6 @@
-export const QUALIFIERS = {
+import type { QualifierData } from "~/components/search/search"
+
+export const QUALIFIERS: QualifierData = {
   'repo:': { label: 'Repository (user/repo)', icon: 'octicon:repo-16' },
   'user:': { label: 'User', icon: 'octicon:person-16' },
   'org:': { label: 'Organization', icon: 'octicon:organization-16' },
@@ -11,4 +13,10 @@ export const QUALIFIERS = {
   'topic:': { label: 'Topic', icon: 'octicon:hash-16' },
   'is:': { label: 'State', icon: 'octicon:circle-16' },
   'fork:': { label: 'Fork', icon: 'octicon:repo-forked-16' },
-} as const
+}
+
+export function useQualifiers() {
+  return {
+    QUALIFIERS
+  }
+}

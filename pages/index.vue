@@ -10,7 +10,7 @@ import {
   SelectValue,
 } from '#components'
 import { OrderOptions, SortOptions } from '~/types'
-import SearchInput from '~/components/SearchInput.vue'
+import SearchInput from '~/components/search/SearchInput.vue'
 
 // Agregar meta tags dinámicos
 useSeoMeta({

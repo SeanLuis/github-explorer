@@ -1,4 +1,4 @@
-import type { ColoredPart, SearchToken } from '~/types/search'
+import type { ColoredPart, SearchToken } from '~/components/search/search'
 import { QUALIFIERS } from './useQualifiers'
 
 export function useSearchParser() {

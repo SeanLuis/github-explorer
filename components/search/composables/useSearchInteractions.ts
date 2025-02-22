@@ -1,5 +1,5 @@
 import { ref, computed, nextTick } from 'vue'
-import type { SearchToken } from '../types/search'
+import type { SearchToken } from '../search'
 import { useSearchParser } from './useSearchParser'
 
 export function useSearchInteractions(
