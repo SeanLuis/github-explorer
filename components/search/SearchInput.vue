@@ -658,13 +658,13 @@ watch(() => props.modelValue, (newValue) => {
 }
 
 .search-input {
-  width: 90%;
+  width: 100%;
   background: transparent;
   outline: none;
   position: relative;
   white-space: pre;
   padding: 2px 0;
-  min-width: 90%;
+  min-width: 100%;
   color: transparent;
   caret-color: currentColor;
 }
