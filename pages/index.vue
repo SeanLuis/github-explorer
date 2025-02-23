@@ -171,14 +171,14 @@ const clearFilter = (key: keyof Filters) => {
             <div class="relative flex-1">
               <SearchInput
                 v-model="searchQuery"
-                mode="modal"
+                mode="inline"
                 @search="onSearch"
               />
             </div>
 
             <div class="flex gap-2 shrink-0">
               <Select v-model:model-value="selectedLanguage">
-                <SelectTrigger class="w-[180px]"> <!-- Ancho fijo para el trigger -->
+                <SelectTrigger class="w-[180px]">
                   <SelectValue :placeholder="selectedLanguage || 'Select Language'" />
                 </SelectTrigger>
                 <SelectContent>

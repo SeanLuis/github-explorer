@@ -5,6 +5,7 @@ import { useSearchParser } from './composables/useSearchParser'
 import { useScrollLock } from './composables/useScrollLock'
 import { useSearchInput } from './composables/useSearchInput'
 import { useSearchInteractions } from './composables/useSearchInteractions'
+import { useSearchHighlighter } from './composables/useSearchHighlighter'  // Nuevo: importar highlighter
 
 const props = defineProps<{
   modelValue: string
@@ -63,8 +64,11 @@ const {
   removeQualifier
 } = searchInteractions
 
-// 4. Finalmente las computed properties que dependen de todo lo anterior
-const coloredParts = computed(() => colorText(searchValue.value))
+// Nuevo: usar el highlighter que devuelve un string HTML
+const { highlightText } = useSearchHighlighter()
+const highlightedHTML = computed(() => highlightText(searchValue.value))
+
+// Nuevo: agregar computed property 'suggestions'
 const suggestions = computed(() => {
   const usedQualifiers = searchTokens.value
     .filter(token => token.type === 'qualifier')
@@ -72,13 +76,15 @@ const suggestions = computed(() => {
       qualifier: token.qualifier + ':',
       value: token.value
     }))
-
   return Object.keys(QUALIFIERS).map(qualifier => ({
     qualifier,
     isUsed: usedQualifiers.some(used => used.qualifier === qualifier),
     value: usedQualifiers.find(used => used.qualifier === qualifier)?.value
   }))
 })
+
+// Eliminar o comentar el uso anterior de coloredParts
+// const coloredParts = computed(() => colorText(searchValue.value))
 
 // Watchers
 watch(() => props.modelValue, (newValue) => {
@@ -111,25 +117,16 @@ watch(() => props.modelValue, (newValue) => {
         
         <!-- Simplificar el contenedor del input -->
         <div class="relative flex-1">
-          <!-- Colored preview -->
+          <!-- Nuevo: colored preview usando v-html -->
           <div 
             aria-hidden="true"
             class="search-input-mirror absolute inset-0 pointer-events-none flex items-center overflow-hidden"
           >
-            <template v-for="(part, index) in coloredParts" :key="index">
-              <span 
-                v-if="part.type === 'value'" 
-                class="search-badge"
-              >{{ part.text }}</span>
-              <span
-                v-else
-                :class="{
-                  'text-primary font-medium': part.type === 'qualifier',
-                }"
-              >{{ part.text }}</span>
-            </template>
-            <!-- Agregar el cursor aquí también -->
-            <span v-if="isInputFocused" class="typing-cursor"></span>
+            <span v-html="highlightedHTML"></span>
+            <span 
+              v-if="isInputFocused && searchValue" 
+              class="typing-cursor"
+            ></span>
           </div>
 
           <input
@@ -141,7 +138,7 @@ watch(() => props.modelValue, (newValue) => {
               'has-content': searchValue,
               'text-transparent': searchValue
             }"
-            placeholder="Search repositories..."
+            placeholder="Press / to search repositories..."
             @input="handleInput"
             @keydown="handleKeyDown"
             @focus="handleFocus"
@@ -230,20 +227,12 @@ watch(() => props.modelValue, (newValue) => {
               />
               
               <div class="relative flex-1">
-                <!-- Colored preview and cursor -->
+                <!-- Nuevo: Use v-html for highlighted HTML instead of coloredParts -->
                 <div 
                   aria-hidden="true"
                   class="search-input-mirror absolute inset-0 pointer-events-none flex items-center whitespace-pre overflow-x-auto"
                 >
-                  <template v-for="(part, index) in coloredParts" :key="index">
-                    <span v-if="part.type === 'value'" class="search-badge whitespace-pre">{{ part.text }}</span>
-                    <span
-                      v-else
-                      :class="{
-                        'text-primary font-medium whitespace-pre': part.type === 'qualifier',
-                      }"
-                    >{{ part.text }}</span>
-                  </template>
+                  <span v-html="highlightedHTML"></span>
                   <span v-if="isInputFocused" class="typing-cursor"></span>
                 </div>
 
@@ -253,7 +242,7 @@ watch(() => props.modelValue, (newValue) => {
                   type="text"
                   class="search-input w-full bg-transparent outline-none relative"
                   :class="{ 'text-transparent': searchValue }"
-                  placeholder="Search repositories..."
+                  placeholder="Press / to search repositories..."
                   @input="handleInput"
                   @keydown="handleKeyDown"
                   @scroll="handleInputScroll"
@@ -351,6 +340,42 @@ watch(() => props.modelValue, (newValue) => {
 /* ...rest of existing styles... */
 .text-transparent {
   -webkit-text-fill-color: currentColor;
+}
+
+.typing-cursor {
+  display: inline-block;
+  width: 1px; /* Más fino */
+  height: 1.25em;
+  background-color: currentColor;
+  margin-left: 1px;
+  animation: blink 1s step-end infinite;
+  position: relative;
+  opacity: 0.8; /* Más sutil */
+  top: 1px;
+}
+
+/* Ajustar la animación para que sea más suave */
+@keyframes blink {
+  0%, 100% {
+    opacity: 0.8;
+  }
+  50% {
+    opacity: 0;
+  }
+}
+
+/* Asegurar que el caret del input nativo esté oculto */
+.search-input {
+  caret-color: transparent !important;
+}
+
+/* Solo mostrar el caret personalizado cuando el input está enfocado */
+.search-input:focus + .typing-cursor {
+  display: block;
+}
+
+.search-input:not(:focus) + .typing-cursor {
+  display: none;
 }
 
 .typing-cursor {
@@ -875,5 +900,74 @@ watch(() => props.modelValue, (newValue) => {
 .search-input-field::placeholder {
   -webkit-text-fill-color: initial;
   color: hsl(var(--muted-foreground));
+}
+
+/* Nuevos estilos para el resaltado */
+:deep(.search-token-qualifier) {
+  color: #0969da;
+  font-weight: 500;
+  white-space: pre;
+}
+
+:deep(.search-token-value) {
+  display: inline-flex;
+  align-items: center;
+  background-color: #ddf4ff;
+  color: #0969da;
+  border-radius: 3px;
+  padding: 0 4px;
+  margin: 0 1px;
+  font-weight: 500;
+  white-space: pre;
+}
+
+:deep(.search-token-text) {
+  color: currentColor;
+  white-space: pre;
+}
+
+/* Dark mode */
+:root[class~="dark"] :deep(.search-token-qualifier),
+:root[class~="dark"] :deep(.search-token-value) {
+  color: #2f81f7;
+}
+
+:root[class~="dark"] :deep(.search-token-value) {
+  background-color: #1a384d;
+}
+
+/* Asegurar que el texto del input sea transparente cuando tiene contenido */
+.search-input.has-content {
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+/* Asegurar que el input mantenga el texto transparente */
+.search-input {
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  caret-color: currentColor;
+}
+
+.search-input::placeholder {
+  -webkit-text-fill-color: var(--tw-text-opacity, 1);
+  color: hsl(var(--muted-foreground));
+}
+
+/* Ajustar el contenedor del mirror */
+.search-input-mirror {
+  white-space: pre;
+  overflow-x: hidden;
+}
+
+/* Actualizar los estilos del input para controlar la visibilidad del caret */
+.search-input {
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  caret-color: transparent; /* Ocultar caret por defecto */
+}
+
+.search-input:focus {
+  caret-color: currentColor; /* Mostrar caret solo cuando está enfocado */
 }
 </style>

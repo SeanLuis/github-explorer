@@ -5,54 +5,55 @@ export function useSearchParser() {
   const parseSearchTokens = (value: string): SearchToken[] => {
     const tokens: SearchToken[] = []
     let i = 0
-
+    
     while (i < value.length) {
-      let matchedQualifier = false
+      // Check for qualifiers
+      const qualifierMatch = Object.keys(QUALIFIERS).find(q => 
+        value.slice(i).toLowerCase().startsWith(q.toLowerCase())
+      )
       
-      for (const qualifier of Object.keys(QUALIFIERS)) {
-        if (value.slice(i).toLowerCase().startsWith(qualifier.toLowerCase())) {
-          let j = i + qualifier.length
-          let qualifierValue = ''
-          
-          while (j < value.length && value[j] !== ' ') {
-            qualifierValue += value[j]
-            j++
-          }
-
-          if (qualifierValue) {
-            tokens.push({
-              type: 'qualifier',
-              qualifier: qualifier.slice(0, -1),
-              value: qualifierValue
-            })
-          }
-
-          i = j
-          matchedQualifier = true
-          break
+      if (qualifierMatch) {
+        // Move past the qualifier
+        i += qualifierMatch.length
+        
+        // Collect the value after the qualifier
+        let qualifierValue = ''
+        while (i < value.length && value[i] !== ' ') {
+          qualifierValue += value[i]
+          i++
         }
-      }
-
-      if (!matchedQualifier) {
+        
+        tokens.push({
+          type: 'qualifier',
+          qualifier: qualifierMatch.slice(0, -1), // Remove trailing colon
+          value: qualifierValue
+        })
+        
+        // Add space if there is one
+        if (i < value.length && value[i] === ' ') {
+          tokens.push({ type: 'space', value: ' ' })
+          i++
+        }
+      } else {
+        // Handle regular text
         if (value[i] === ' ') {
           tokens.push({ type: 'space', value: ' ' })
+          i++
         } else {
-          let textValue = ''
-          while (i < value.length && !Object.keys(QUALIFIERS).some(q => 
-            value.slice(i).toLowerCase().startsWith(q.toLowerCase())
-          ) && value[i] !== ' ') {
-            textValue += value[i]
+          let text = ''
+          while (i < value.length && 
+                 !Object.keys(QUALIFIERS).some(q => value.slice(i).toLowerCase().startsWith(q.toLowerCase())) && 
+                 value[i] !== ' ') {
+            text += value[i]
             i++
           }
-          if (textValue) {
-            tokens.push({ type: 'text', value: textValue })
+          if (text) {
+            tokens.push({ type: 'text', value: text })
           }
-          continue
         }
       }
-      i++
     }
-
+    
     return tokens
   }
 
