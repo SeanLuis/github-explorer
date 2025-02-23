@@ -1,4 +1,4 @@
-import { ref, computed, nextTick } from 'vue'
+import { ref, computed, nextTick, onMounted, onUnmounted } from 'vue'
 import type { SearchToken } from '../search'
 import { useSearchParser } from './useSearchParser'
 
@@ -33,12 +33,25 @@ export function useSearchInteractions(
       isInputFocused.value = true
       showSuggestions.value = true
       lockScroll()
-      nextTick(() => {
-        input.value?.focus()
-      })
     } else {
       isInputFocused.value = true
       showSuggestions.value = true
+    }
+
+    // Forzar foco inmediatamente
+    if (input.value) {
+      input.value.focus()
+      input.value.click() // Simular click
+      
+      requestAnimationFrame(() => {
+        if (input.value) {
+          input.value.focus()
+          
+          setTimeout(() => {
+            input.value?.focus()
+          }, 1)
+        }
+      })
     }
   }
 
@@ -143,6 +156,41 @@ export function useSearchInteractions(
       updateCursorPosition()
     })
   }
+
+  // Escuchar la tecla '/' directamente aquí para abrir/modal y forzar foco
+  const handleGlobalShortcut = (event: KeyboardEvent) => {
+    if (
+      event.key === '/' &&
+      !['INPUT', 'TEXTAREA'].includes((event.target as HTMLElement).tagName)
+    ) {
+      event.preventDefault()
+      isInputFocused.value = true
+
+      // Si está en modo modal y cerrado, abrirlo
+      if (!isInlineMode.value && !isExpanded.value) {
+        isExpanded.value = true
+        lockScroll()
+      }
+      // Forzar foco en el input
+      if (input.value) {
+        input.value.focus()
+        requestAnimationFrame(() => {
+          input.value?.focus()
+          setTimeout(() => {
+            input.value?.focus()
+          }, 1)
+        })
+      }
+    }
+  }
+
+  onMounted(() => {
+    window.addEventListener('keydown', handleGlobalShortcut)
+  })
+
+  onUnmounted(() => {
+    window.removeEventListener('keydown', handleGlobalShortcut)
+  })
 
   return {
     searchInput,

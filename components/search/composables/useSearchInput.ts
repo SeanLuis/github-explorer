@@ -61,14 +61,33 @@ export function useSearchInput(onHandleFocus?: () => void) {
     }
   }
 
+  const forceFocus = () => {
+    if (input.value) {
+      // Inmediatamente intentar el foco
+      input.value.focus()
+      
+      // Usar múltiples técnicas para asegurar el foco
+      requestAnimationFrame(() => {
+        if (input.value) {
+          input.value.focus()
+          input.value.click() // Simular click para forzar foco
+          
+          // Último intento después de un pequeño delay
+          setTimeout(() => {
+            input.value?.focus()
+          }, 1)
+        }
+      })
+    }
+  }
+
   const handleGlobalShortcut = (event: KeyboardEvent) => {
     if (event.key === '/' && !['INPUT', 'TEXTAREA'].includes((event.target as HTMLElement).tagName)) {
       event.preventDefault()
+      event.stopPropagation()
       isInputFocused.value = true
       onHandleFocus?.()
-      nextTick(() => {
-        input.value?.focus()
-      })
+      forceFocus()
     }
   }
 
@@ -94,6 +113,7 @@ export function useSearchInput(onHandleFocus?: () => void) {
     handleInputScroll,
     updateContainerWidth,
     updateDropdownPosition,
-    handleGlobalShortcut
+    handleGlobalShortcut,
+    forceFocus, // Exportar para uso externo
   }
 }
