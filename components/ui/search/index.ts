@@ -1,0 +1,1 @@
+export { default as FilterInput } from '~/components/ui/search/FilterInput.vue';

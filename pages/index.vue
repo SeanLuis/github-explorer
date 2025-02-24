@@ -11,7 +11,7 @@ import {
   SelectValue,
 } from '#components'
 import { OrderOptions, SortOptions } from '~/types'
-import FilterInput from '~/components/ui/search/FilterInput.vue'
+import { FilterInput } from '~/components/ui/search'
 
 // Agregar meta tags dinámicos
 useSeoMeta({
