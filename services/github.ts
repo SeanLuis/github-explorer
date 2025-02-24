@@ -28,34 +28,47 @@ export class GitHubService {
   }): string {
     const conditions: string[] = []
     
-    if (params.minStars && params.minStars > 0) {
-      conditions.push(`stars:>=${params.minStars}`)
-    } else {
-      conditions.push('stars:>100') // filtro por defecto
-    }
-    
     if (params.query?.trim()) {
-      conditions.push(params.query.trim())
+      // Validar y formatear repo: queries
+      const formattedQuery = params.query.trim().split(' ').map(part => {
+        if (part.toLowerCase().startsWith('repo:')) {
+          const repoValue = part.slice(5) // remover 'repo:'
+          // Si solo se proporciona un término, tratarlo como una búsqueda general
+          if (!repoValue.includes('/')) {
+            return repoValue // quitar el qualifier repo: si no tiene el formato correcto
+          }
+        }
+        return part
+      }).join(' ')
+      
+      conditions.push(formattedQuery)
     }
     
-    if (params.language && params.language !== 'all') {
+    // Solo agregar condiciones si no están ya presentes en el query
+    const query = params.query?.toLowerCase() || ''
+    
+    if (params.minStars && params.minStars > 0 && !query.includes('stars:')) {
+      conditions.push(`stars:>=${params.minStars}`)
+    }
+    
+    if (params.language && params.language !== 'all' && !query.includes('language:')) {
       conditions.push(`language:${params.language}`)
     }
     
-    if (params.topics && params.topics.length > 0) {
+    if (params.topics?.length && !query.includes('topic:')) {
       params.topics.forEach(topic => {
         conditions.push(`topic:${topic}`)
       })
     }
 
-    if (params.hasTests) {
+    if (params.hasTests && !query.includes('topic:testing')) {
       conditions.push('topic:testing')
     }
-    if (params.isTemplate) {
+
+    if (params.isTemplate && !query.includes('is:template')) {
       conditions.push('is:template')
     }
 
-    console.log('Search conditions:', conditions)
     return conditions.join(' ')
   }
 

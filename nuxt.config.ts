@@ -14,7 +14,8 @@ export default defineNuxtConfig({
     '@nuxtjs/robots',
     'shadcn-nuxt',
     '@nuxt/icon',
-    '@nuxtjs/seo'
+    '@nuxtjs/seo',
+    'nuxt-schema-org'
   ],
   tailwindcss: {
     cssPath: '~/assets/css/tailwind.css',
@@ -67,10 +68,11 @@ export default defineNuxtConfig({
     identity: {
       type: 'Organization',
       name: 'GitHub Open Source Explorer',
+      url: 'https://github-explorer.nuxt.dev',
       logo: 'https://github-explorer.nuxt.dev/logo.png'
     },
-    host: process.env.NUXT_PUBLIC_SITE_URL || 'https://github-explorer.nuxt.dev',
-    includeHomeInBreadcrumb: false
+    host: 'https://github-explorer.nuxt.dev',
+    canonicalHost: 'https://github-explorer.nuxt.dev'
   },
   routeRules: {
     // Página principal

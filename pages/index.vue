@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { useGithubStore } from '~/stores/github'
-import { useDebounceFn } from '@vueuse/core'
 import { ref, watch, onMounted, computed } from 'vue'
 import { GitHubService } from '~/services/github'
+import { useSchemaOrg, defineWebPage } from '#imports'
 import {
   Select,
   SelectContent,
@@ -11,6 +11,7 @@ import {
   SelectValue,
 } from '#components'
 import { OrderOptions, SortOptions } from '~/types'
+import { FilterInput } from '~/components/ui/search'
 
 // Agregar meta tags dinámicos
 useSeoMeta({
@@ -28,16 +29,8 @@ useSchemaOrg([
     description: 'Discover amazing open source projects on GitHub',
     potentialAction: {
       '@type': 'SearchAction',
-      target: {
-        '@type': 'EntryPoint',
-        urlTemplate: `https://github-explorer.nuxt.dev'}/search?q={search_term_string}`,
-        actionPlatform: 'http://schema.org/WebSite'
-      },
-      'query-input': {
-        '@type': 'PropertyValueSpecification',
-        valueRequired: true,
-        valueName: 'search_term_string'
-      }
+      target: 'https://github-explorer.nuxt.dev/search?q={search_term_string}',
+      'query-input': 'required name=search_term_string'
     }
   })
 ])
@@ -64,19 +57,13 @@ const filters = ref<Filters>({
 const selectedLanguage = ref<string>('all')
 const languages = ref(GitHubService.getLanguages())
 
-const debouncedSearch = useDebounceFn(() => {
-  if (!searchQuery.value && !selectedLanguage.value) return
-  
+const onSearch = (query: string) => {
   store.searchRepositories({
-    query: searchQuery.value,
-    language: selectedLanguage.value,
-    minStars: 100
+    query: query,
+    language: selectedLanguage.value === 'all' ? undefined : selectedLanguage.value,
+    minStars: filters.value.minStars
   })
-}, 500)
-
-watch([searchQuery, selectedLanguage], () => {
-  debouncedSearch()
-})
+}
 
 const onFiltersApply = () => {
   const searchParams = {
@@ -156,12 +143,17 @@ const clearFilter = (key: keyof Filters) => {
   }
   onFiltersApply()
 }
+
+
+const filter = ref('')
+const keywords = ['is:issue', 'is:open', 'label:bug', 'author:octocat']
 </script>
 
 <template>
   <div>
-    <section class="text-center py-16 mb-8 border rounded-xl bg-gradient-to-br from-primary/5 to-background relative overflow-hidden">
-      <div class="absolute inset-0 bg-grid-pattern opacity-10" />
+    <section class="text-center py-16 mb-8 border rounded-xl bg-gradient-to-br from-primary/5 to-background relative">
+      <!-- Removido overflow-hidden de la section y movido solo al div del patrón -->
+      <div class="absolute inset-0 bg-grid-pattern opacity-10 overflow-hidden" />
       
       <div class="relative px-4 sm:px-6">
         <h1 class="scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl mb-4">
@@ -174,21 +166,18 @@ const clearFilter = (key: keyof Filters) => {
         <div class="max-w-4xl mx-auto space-y-4">
           <div class="flex flex-col sm:flex-row gap-4 px-2 sm:px-0">
             <div class="relative flex-1">
-              <Icon 
-                name="octicon:search-16"
-                class="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground"
-              />
-              <Input
-                v-model="searchQuery"
-                type="search"
+              <FilterInput
+                v-model="filter"
+                :keywords="keywords"
                 placeholder="Search repositories..."
-                class="w-full pl-12"
+                class="h-9"
+                @search="onSearch"
               />
             </div>
 
             <div class="flex gap-2 shrink-0">
               <Select v-model:model-value="selectedLanguage">
-                <SelectTrigger class="w-[180px]"> <!-- Ancho fijo para el trigger -->
+                <SelectTrigger class="w-[180px]">
                   <SelectValue :placeholder="selectedLanguage || 'Select Language'" />
                 </SelectTrigger>
                 <SelectContent>
