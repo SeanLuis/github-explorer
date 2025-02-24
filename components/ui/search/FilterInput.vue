@@ -4,6 +4,7 @@ import { useFilterSuggestions } from './composables/useFilterSuggestions'
 import IconSearch from '@/components/icons/IconSearch.vue'
 import KeyboardShortcut from './KeyboardShortcut.vue'
 import FilterSuggestions from './FilterSuggestions.vue'
+import { cn } from '@/lib/utils'
 
 interface Props {
   modelValue?: string
@@ -11,10 +12,13 @@ interface Props {
   keywords?: string[]
 }
 
-const props = withDefaults(defineProps<Props>(), {
+const props = withDefaults(defineProps<Props & {
+  class?: string
+}>(), {
   modelValue: '',
   placeholder: 'Filter...',
-  keywords: () => []
+  keywords: () => [],
+  class: ''
 })
 
 const emit = defineEmits<{
@@ -101,20 +105,20 @@ const handleSuggestionSelect = (prefix: string) => {
 </script>
 
 <template>
-  <div class="relative">
-    <div class="relative h-8 flex items-center">
-      <div class="absolute left-2 flex items-center pointer-events-none text-muted-foreground">
+  <div :class="cn('relative', props.class)">
+    <div class="relative flex items-center h-full"> <!-- Cambiado de h-8 a h-full -->
+      <div :class="cn('absolute left-2 flex items-center pointer-events-none text-muted-foreground')">
         <IconSearch class="h-4 w-4" />
       </div>
 
       <div
         ref="wrapperRef"
-        class="absolute inset-0 flex items-center overflow-x-auto whitespace-pre pl-8 pr-2.5 py-1 text-[13px] pointer-events-none scrollbar-hide"
+        :class="cn('absolute inset-0 flex items-center overflow-x-auto whitespace-pre pl-8 pr-2.5 py-1 text-[13px] pointer-events-none scrollbar-hide')"
       >
         <template v-for="(part, i) in highlightedText" :key="i">
           <template v-if="part.isFilter">
-            <span class="text-muted-foreground">{{ part.prefix }}</span>
-            <span class="bg-primary/10 text-primary rounded-sm">{{ part.value }}</span>
+            <span :class="cn('text-muted-foreground')">{{ part.prefix }}</span>
+            <span :class="cn('bg-primary/10 text-primary rounded-sm')">{{ part.value }}</span>
           </template>
           <span v-else>{{ part.text }}</span>
         </template>
@@ -129,10 +133,17 @@ const handleSuggestionSelect = (prefix: string) => {
         @scroll="handleScroll"
         @focus="showSuggestions = true"
         :placeholder="placeholder"
-        class="h-full w-full rounded-md border border-input pl-8 pr-2.5 py-1 text-[13px] bg-transparent ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring text-transparent caret-foreground"
+        :class="cn(
+          'h-full w-full rounded-md border border-input',
+          'pl-8 pr-2.5 py-1 text-[13px]',
+          'bg-transparent ring-offset-background',
+          'placeholder:text-muted-foreground',
+          'focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring',
+          'text-transparent caret-foreground'
+        )"
       />
 
-      <div class="absolute right-2 flex items-center pointer-events-none">
+      <div :class="cn('absolute right-2 flex items-center pointer-events-none')">
         <KeyboardShortcut shortcut="/" />
       </div>
     </div>

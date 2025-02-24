@@ -170,7 +170,7 @@ const keywords = ['is:issue', 'is:open', 'label:bug', 'author:octocat']
                 v-model="filter"
                 :keywords="keywords"
                 placeholder="Search repositories..."
-                class="max-w-xl"
+                class="h-9"
                 @search="onSearch"
               />
             </div>
